@@ -110,12 +110,21 @@ public class SettingsFragment extends Fragment implements IntroContract.View.Set
 
     @Override
     public void showDaysText(String text) {
-        this.daysText.setText(text);
+        if (!text.contentEquals(this.daysText.getText())) {
+            this.daysText.startAnimation(fadeOut);
+            this.daysText.setText(text);
+            this.daysText.startAnimation(fadeIn);
+        }
+
     }
 
     @Override
     public void showMain() {
+        view.startAnimation(fadeOut);
+        view.setVisibility(View.INVISIBLE);
         Intent intent = new Intent(this.getContext(), MainActivity.class);
         startActivity(intent);
     }
+
+
 }
