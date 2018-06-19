@@ -1,0 +1,29 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@android:color/black</item>
+        <item name="android:textColorPrimary">@android:color/black</item>
+        <item name="android:textColorSecondary">@android:color/black</item>
+        <item name="android:textColorPrimaryInverse">@android:color/white</item>
+        <item name="android:textColorSecondaryInverse">@android:color/white</item>
+        <item name="android:buttonStyle">@style/AppTheme.Button</item>
+        <item name="android:colorBackground">@android:color/white</item>4
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <!-- Intro application theme with no ActionBar. -->
+    <style name="IntroTheme" parent="AppTheme">
+        <item name="actionBarTheme">@style/Theme.AppCompat.NoActionBar</item>
+    </style>
+
+    <!-- Button Style -->
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/capsule_button</item>
+    </style>
+
+
+</resources>
