@@ -1,7 +1,9 @@
 package com.example.arcius.livinghistory.intro.Fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -55,7 +57,7 @@ public class SettingsFragment extends Fragment implements IntroContract.View.Set
         ImageButton rightArrow = view.findViewById(R.id.incButton);
         ImageButton leftArrow = view.findViewById(R.id.disButton);
 
-        this.dateText = view.findViewById(R.id.dateText);
+        this.dateText = view.findViewById(R.id.date);
         this.daysText = view.findViewById(R.id.textView);
         this.year = view.findViewById(R.id.yearText);
         this.days = view.findViewById(R.id.daysText);
@@ -122,6 +124,8 @@ public class SettingsFragment extends Fragment implements IntroContract.View.Set
     public void showMain() {
         view.startAnimation(fadeOut);
         view.setVisibility(View.INVISIBLE);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+        preferences.edit().putBoolean("firstrun", false).apply();
         Intent intent = new Intent(this.getContext(), MainActivity.class);
         startActivity(intent);
     }

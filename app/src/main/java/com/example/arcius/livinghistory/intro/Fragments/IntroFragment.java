@@ -2,6 +2,7 @@ package com.example.arcius.livinghistory.intro.Fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -26,7 +27,7 @@ public class IntroFragment extends Fragment implements IntroContract.View.Intro 
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.intro_frag, container, false);
 
@@ -97,7 +98,4 @@ public class IntroFragment extends Fragment implements IntroContract.View.Intro 
         transaction.commit();
     }
 
-    private void performTransition() {
-
-    }
 }

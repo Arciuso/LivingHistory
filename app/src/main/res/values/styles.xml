@@ -12,6 +12,7 @@
         <item name="android:buttonStyle">@style/AppTheme.Button</item>
         <item name="android:colorBackground">@android:color/white</item>4
         <item name="android:textColor">@android:color/black</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>
     </style>
 
     <!-- Intro application theme with no ActionBar. -->
@@ -24,6 +25,10 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@drawable/capsule_button</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
 </resources>
