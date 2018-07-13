@@ -1,14 +1,32 @@
 package com.example.arcius.livinghistory.main;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
+
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
 
+import org.joda.time.Days;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainPresenter implements MainContract.Presenter {
 
     private MainContract.View view;
+
+    private final static LocalDate startDate = new LocalDate(1939,9,1);
+    private final static LocalDate endDate = new LocalDate(1945,9,2);
+
+    private int year;
+
+    private LocalDate myDate;
+    private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(),endDate.toDateTimeAtStartOfDay());
 
     MainPresenter(MainContract.View view){
         this.view = view;
@@ -16,7 +34,16 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void initData() {
+    public void start() {
+        SharedPreferences sp = this.view.getContext().getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+        this.year = sp.getInt("year", 1939);
+        this.myDate = new LocalDate(year,LocalDate.now().getMonthOfYear(),LocalDate.now().getDayOfMonth());
+        setText();
+        setDate();
+    }
+
+    @Override
+    public void initData() {    //TODO
         List<Card> cards = new ArrayList<>();
         cards.add(new Card("0","08:34","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
         cards.add(new Card("1","09:50","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
@@ -28,7 +55,90 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void refreshCards() {    //TODO ask database for this.time events, if so call initData();
+    public void loadToday() {
+        System.out.println("Load today !");
+    }
 
+    @Override
+    public void refreshCards() {    //TODO ask database for this.time events, if so call initData();
+        System.out.println("Refresh cards !");
+    }
+
+    @Override
+    public void decrementDay() {    //TODO
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card("0","08:34","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
+        cards.add(new Card("1","09:50","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
+        cards.add(new Card("4","12:52","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
+
+        view.updateData(cards);
+    }
+
+    @Override
+    public void incrementDay() {    //TODO
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card("0","08:34","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
+        cards.add(new Card("1","09:50","Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.","Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
+
+        view.updateData(cards);
+    }
+
+    private void setText() {
+        if(interval.contains(myDate.toDateTimeAtStartOfDay())) { //During War
+            view.showYear(Integer.toString(year));
+            setDaysDuring();
+        } else if (myDate.compareTo(startDate) < 0) {           //Before War
+            view.showYear(Integer.toString(year));
+            setDaysBefore();
+        } else {                                                //After War
+            view.showYear(Integer.toString(year));
+            setDaysAfter();
+        }
+    }
+
+    private void setDaysAfter() {
+        int days = Days.daysBetween(endDate.toDateTimeAtStartOfDay(),myDate.toDateTimeAtStartOfDay()).getDays();
+        view.showDays(Integer.toString(days));
+        view.showDaysText("days after war");
+    }
+
+    private void setDaysBefore() {
+        int days = Days.daysBetween(myDate.toDateTimeAtStartOfDay(),startDate.toDateTimeAtStartOfDay()).getDays();
+        view.showDays(Integer.toString(days));
+        view.showDaysText("days to start of war");
+    }
+
+    private void setDaysDuring() {
+        int days = Days.daysBetween(myDate.toDateTimeAtStartOfDay(),endDate.toDateTimeAtStartOfDay()).getDays();
+        view.showDays(Integer.toString(days));
+        view.showDaysText("days left till end of the war.");
+    }
+
+    private void setDate() {
+
+        String text;
+        Calendar calendar = Calendar.getInstance();
+        Date date = new Date();
+        calendar.setTime(date);
+
+        if(calendar.get(Calendar.DAY_OF_MONTH) == 1){
+            text = "1st of " + getMonthForInt(date.getMonth());
+        } else if ((calendar.get(Calendar.DAY_OF_MONTH) == 2)) {
+            text =  "2nd of " + getMonthForInt(date.getMonth());
+        } else {
+            text = calendar.get(Calendar.DAY_OF_MONTH) + "th of " + getMonthForInt(date.getMonth());
+        }
+
+        view.showDate(text);
+    }
+
+    private String getMonthForInt(int num) {
+        String month = "";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (num >= 0 && num <= 11 ) {
+            month = months[num];
+        }
+        return month;
     }
 }

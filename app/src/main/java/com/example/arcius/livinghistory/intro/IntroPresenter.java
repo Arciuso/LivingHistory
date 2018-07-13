@@ -1,5 +1,8 @@
 package com.example.arcius.livinghistory.intro;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
+
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -108,5 +111,13 @@ public class IntroPresenter implements IntroContract.Presenter.Settings {
             month = months[num];
         }
         return month;
+    }
+
+    @Override
+    public void saveYear() {
+        SharedPreferences sharedPreferences = this.view.getContext().getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("year", year);
+        editor.apply();
     }
 }

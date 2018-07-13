@@ -60,7 +60,7 @@ public class SettingsFragment extends Fragment implements IntroContract.View.Set
         this.dateText = view.findViewById(R.id.date);
         this.daysText = view.findViewById(R.id.textView);
         this.year = view.findViewById(R.id.yearText);
-        this.days = view.findViewById(R.id.daysText);
+        this.days = view.findViewById(R.id.days);
 
         Button saveButton = view.findViewById(R.id.saveButton);
 
@@ -117,18 +117,16 @@ public class SettingsFragment extends Fragment implements IntroContract.View.Set
             this.daysText.setText(text);
             this.daysText.startAnimation(fadeIn);
         }
-
     }
 
     @Override
     public void showMain() {
         view.startAnimation(fadeOut);
         view.setVisibility(View.INVISIBLE);
+        this.presenter.saveYear();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
         preferences.edit().putBoolean("firstrun", false).apply();
         Intent intent = new Intent(this.getContext(), MainActivity.class);
         startActivity(intent);
     }
-
-
 }

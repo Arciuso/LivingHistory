@@ -1,5 +1,7 @@
 package com.example.arcius.livinghistory.intro;
 
+import android.content.Context;
+
 public interface IntroContract {
 
     interface View {
@@ -11,6 +13,7 @@ public interface IntroContract {
         }
 
         interface Settings {
+            Context getContext();
             void setPresenter(IntroContract.Presenter.Settings presenter);
             void showDateText(String date);
             void showYear(String year);
@@ -27,6 +30,7 @@ public interface IntroContract {
             void start();
             void incYear();
             void decYear();
+            void saveYear();
         }
     }
 }

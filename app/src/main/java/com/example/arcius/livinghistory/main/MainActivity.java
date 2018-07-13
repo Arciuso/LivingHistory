@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_act);
 
         loadIntroFragment();
+
     }
 
     @Override

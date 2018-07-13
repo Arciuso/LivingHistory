@@ -6,10 +6,6 @@ public class Card {
         return type;
     }
 
-    public int getResourceImage() {
-        return resourceImage;
-    }
-
     public enum CardTypes {
         Classic(0), Image(1);
 
@@ -82,4 +78,9 @@ public class Card {
     public void setEventID(String eventID) {
         this.eventID = eventID;
     }
+
+    public int getResourceImage() {
+        return resourceImage;
+    }
+
 }
