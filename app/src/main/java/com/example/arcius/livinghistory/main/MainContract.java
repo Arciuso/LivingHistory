@@ -1,8 +1,11 @@
 package com.example.arcius.livinghistory.main;
 
 import android.content.Context;
+import android.view.animation.Animation;
 
 import com.example.arcius.livinghistory.data.Card;
+
+import org.joda.time.LocalDate;
 
 import java.util.List;
 
@@ -29,5 +32,8 @@ public interface MainContract {
         void incrementDay();
         void loadToday();
         void refreshCards();
+        LocalDate getCurrentDate();
+        void setCurrentDate(LocalDate date);
+        boolean isToday();
     }
 }

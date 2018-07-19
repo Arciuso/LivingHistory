@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layoutAnimation xmlns:android="http://schemas.android.com/apk/res/android"
-    android:animation="@anim/item_anim_to_right"
+    android:animation="@anim/fade_out"
     android:animationOrder="normal"
-    android:delay="5%" />
+    android:delay="0%p"/>

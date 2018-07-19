@@ -3,6 +3,7 @@ package com.example.arcius.livinghistory.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -35,10 +36,12 @@ public class MainFragment extends Fragment implements MainContract.View {
     RecyclerView recyclerView;
     ProgressBar progressBar;
 
-    LayoutAnimationController controllerToRight;
-    LayoutAnimationController controllerToLeft;
+    Animation animationFadeOut;
+
+    LayoutAnimationController controllerFadeOut;
     LayoutAnimationController controllerFromRight;
     LayoutAnimationController controllerFromLeft;
+    LayoutAnimationController controllerSlideDown;
 
     ImageButton incDayButton;
     ImageButton decDayButton;
@@ -65,12 +68,13 @@ public class MainFragment extends Fragment implements MainContract.View {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_frag, container, false);
 
         swipeRefreshLayout = view.findViewById(R.id.SwipeRefresh);
         recyclerView = view.findViewById(R.id.RecyclerViewCards);
         progressBar = view.findViewById(R.id.ProgressBar);
+
 
         date = view.findViewById(R.id.date);
         days = view.findViewById(R.id.days);
@@ -80,9 +84,7 @@ public class MainFragment extends Fragment implements MainContract.View {
         adapter = new CardAdapter(this,getContext());
         recyclerView.setAdapter(adapter);
 
-        presenter.initData();
-
-        recyclerView.setAdapter(adapter);
+        this.presenter.initData(); //TODO
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -95,24 +97,48 @@ public class MainFragment extends Fragment implements MainContract.View {
         incDayButton = view.findViewById(R.id.incButton);
         decDayButton = view.findViewById(R.id.decButton);
 
-        this.controllerToRight = AnimationUtils.loadLayoutAnimation(recyclerView.getContext(),R.anim.layout_anim_to_right);
-        this.controllerToLeft = AnimationUtils.loadLayoutAnimation(recyclerView.getContext(),R.anim.layout_anim_to_left);
-        this.controllerFromRight = AnimationUtils.loadLayoutAnimation(recyclerView.getContext(),R.anim.layout_anim_from_right);
-        this.controllerFromLeft = AnimationUtils.loadLayoutAnimation(recyclerView.getContext(),R.anim.layout_anim_from_left);
+        this.animationFadeOut = AnimationUtils.loadAnimation(getContext(),R.anim.fade_out);
+
+        this.controllerFadeOut = AnimationUtils.loadLayoutAnimation(getContext(),R.anim.layout_anim_to_fade_out);
+        this.controllerFromLeft = AnimationUtils.loadLayoutAnimation(getContext(),R.anim.layout_anim_from_left);
+        this.controllerFromRight = AnimationUtils.loadLayoutAnimation(getContext(),R.anim.layout_anim_from_right);
+        this.controllerSlideDown = AnimationUtils.loadLayoutAnimation(getContext(),R.anim.layout_anim_slide_down);
 
         incDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                runToRightAnimation();
-                presenter.incrementDay();
+               runFadeOutAnimation();
+
+                new Handler().postDelayed(new Runnable() {  //TODO
+                    @Override
+                    public void run() {     //Instantly after animation ends
+                        recyclerView.clearAnimation();
+                        recyclerView.setVisibility(View.INVISIBLE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        presenter.incrementDay();
+                        runFromRightAnimation();
+                    }
+                },animationFadeOut.getDuration() + 50);
             }
         });
 
         decDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                runToLeftAnimation();
-                presenter.decrementDay();
+                runFadeOutAnimation();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {     //Instantly after animation ends
+                        recyclerView.clearAnimation();
+                        recyclerView.setVisibility(View.INVISIBLE);
+                        progressBar.setVisibility(View.VISIBLE);
+
+                        presenter.decrementDay();
+
+                        runFromLeftAnimation();
+                    }
+                },animationFadeOut.getDuration() + 50);
             }
         });
 
@@ -122,14 +148,31 @@ public class MainFragment extends Fragment implements MainContract.View {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                swipeRefreshLayout.setRefreshing(true);
                 presenter.refreshCards();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
+
+
 
         tofirstFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.loadToday();
+                runFadeOutAnimation();
+
+                new Handler().postDelayed(new Runnable() {  //TODO
+                    @Override
+                    public void run() {     //Instantly after animation ends
+                        recyclerView.clearAnimation();
+                        recyclerView.setVisibility(View.INVISIBLE);
+                        progressBar.setVisibility(View.VISIBLE);
+
+                        presenter.loadToday();
+
+                        runSlideDownAnimation();
+                    }
+                },animationFadeOut.getDuration() + 50);
             }
         });
 
@@ -185,67 +228,9 @@ public class MainFragment extends Fragment implements MainContract.View {
         this.daysText.setText(text);
     }
 
-    private void runToRightAnimation() {
-
-        this.controllerToRight.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                incDayButton.setEnabled(false);
-                decDayButton.setEnabled(false);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                recyclerView.clearAnimation();
-                recyclerView.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-
-                System.out.println("ON END TO RIGHT !");
-
-                runFromRightAnimation();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        recyclerView.setLayoutAnimation(controllerToRight);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
-    }
-
-    private void runToLeftAnimation() {
-
-        this.controllerToLeft.getAnimation().setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                incDayButton.setEnabled(false);
-                decDayButton.setEnabled(false);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                recyclerView.clearAnimation();
-                recyclerView.setVisibility(View.INVISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-
-                runFromLeftAnimation();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-
-        recyclerView.setLayoutAnimation(controllerToLeft);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
-    }
-
     private void runFromRightAnimation() {
+        recyclerView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
         recyclerView.setLayoutAnimation(controllerFromRight);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
@@ -256,10 +241,30 @@ public class MainFragment extends Fragment implements MainContract.View {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                recyclerView.clearAnimation();
                 incDayButton.setEnabled(true);
                 decDayButton.setEnabled(true);
-                System.out.println("ON END FROM RIGHT !");
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        recyclerView.scheduleLayoutAnimation();
+    }
+
+    private void runFadeOutAnimation() {
+        recyclerView.setLayoutAnimation(controllerFadeOut);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                incDayButton.setEnabled(false);
+                decDayButton.setEnabled(false);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
 
             }
 
@@ -268,12 +273,37 @@ public class MainFragment extends Fragment implements MainContract.View {
 
             }
         });
+        recyclerView.scheduleLayoutAnimation();
+    }
+
+    private void runSlideDownAnimation() {
         progressBar.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
-        recyclerView.startLayoutAnimation();
+        recyclerView.setLayoutAnimation(controllerSlideDown);
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                incDayButton.setEnabled(true);
+                decDayButton.setEnabled(true);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        recyclerView.scheduleLayoutAnimation();
     }
 
     private void runFromLeftAnimation() {
+        recyclerView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
         recyclerView.setLayoutAnimation(controllerFromLeft);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
@@ -284,7 +314,6 @@ public class MainFragment extends Fragment implements MainContract.View {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                recyclerView.clearAnimation();
                 incDayButton.setEnabled(true);
                 decDayButton.setEnabled(true);
             }
@@ -294,8 +323,7 @@ public class MainFragment extends Fragment implements MainContract.View {
 
             }
         });
-        progressBar.setVisibility(View.INVISIBLE);
-        recyclerView.setVisibility(View.VISIBLE);
         recyclerView.scheduleLayoutAnimation();
     }
+
 }

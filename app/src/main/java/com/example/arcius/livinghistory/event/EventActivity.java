@@ -21,18 +21,18 @@ public class EventActivity extends AppCompatActivity {
 
     private void loadEventFragment() {
 
+        String eventID = getIntent().getStringExtra(EXTRA_EVENT_ID);
+
         EventFragment eventFragment = (EventFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (eventFragment == null) {
 
-            eventFragment = new EventFragment().newInstance();
-
-            String eventID = getIntent().getStringExtra(EXTRA_EVENT_ID);
-
-            new EventPresenter(eventFragment, eventID);
+            eventFragment = EventFragment.newInstance();
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(R.id.contentFrame, eventFragment);
             transaction.commit();
         }
+
+        new EventPresenter(eventFragment, eventID);
     }
 }

@@ -47,6 +47,7 @@ public class SettingsFragment extends Fragment implements IntroContract.View.Set
     public void onResume() {
         super.onResume();
         presenter.start();
+        System.out.println("ONRESUME");
     }
 
     @Nullable

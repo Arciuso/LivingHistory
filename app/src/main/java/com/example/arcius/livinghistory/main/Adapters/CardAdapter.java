@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,12 +19,12 @@ import java.util.List;
 
 public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    MainContract.View view;
-    Context context;
+    private MainContract.View view;
+    private Context context;
 
-    List<Card> cards;
+    private List<Card> cards;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolderClassic extends RecyclerView.ViewHolder {
 
         CardView card;
 
@@ -33,7 +32,8 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView mainTitle;
         TextView fullText;
 
-        ViewHolder(View view) {
+
+        ViewHolderClassic(View view) {
             super(view);
 
             this.card = view.findViewById(R.id.card);
@@ -43,10 +43,10 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.fullText = view.findViewById(R.id.fullText);
         }
 
-        /* TODO Pridat dalsi ViewHolder pre iny typ Card */
+        /* TODO Pridat dalsi ViewHolderClassic pre iny typ Card */
     }
 
-    class ViewHolderPic extends CardAdapter.ViewHolder {
+    class ViewHolderPic extends ViewHolderClassic {
 
         ImageView image;
 
@@ -100,15 +100,13 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         switch (viewType) {
             case 0:    //Classic
                 cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout, parent, false);
-                return new CardAdapter.ViewHolder(cardView);
-
+                return new ViewHolderClassic(cardView);
             case 1:    //Image
                 cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout_pic, parent, false);
-                return new CardAdapter.ViewHolderPic(cardView);
+                return new ViewHolderPic(cardView);
             default:    //Classic
                 cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout, parent, false);
-                return new CardAdapter.ViewHolder(cardView);
-
+                return new ViewHolderClassic(cardView);
         }
     }
 
@@ -118,7 +116,7 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         switch (card.getType().getValue()){
             case 0 :    //Classic
-                final CardAdapter.ViewHolder classicHolder = (CardAdapter.ViewHolder) holder;
+                final ViewHolderClassic classicHolder = (ViewHolderClassic) holder;
 
                 classicHolder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -154,7 +152,6 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        System.out.println("CARDS SIZE : " + cards.size());
         return cards.size();
     }
 }
