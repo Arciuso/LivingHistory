@@ -40,14 +40,17 @@ public class MainPresenter implements MainContract.Presenter {
         this.year = sp.getInt("year", 1939);
         this.myDate = myDate.withYear(this.year);
 
-
-
         setText();
         setDate();
     }
 
     @Override
     public void initData() {    //TODO
+
+        /*
+           TODO 1. check if data is not already saved in cache files
+           TODO 2. load data
+         */
 
         List<Card> cards = new ArrayList<>();
         cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
@@ -201,10 +204,4 @@ public class MainPresenter implements MainContract.Presenter {
         }
         return month;
     }
-
-
-
-
-
-
 }

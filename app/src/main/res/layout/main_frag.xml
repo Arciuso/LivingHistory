@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/constraintLa"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
 
     <ImageButton
         android:id="@+id/incButton"
@@ -165,12 +164,12 @@
         app:layout_constraintVertical_bias="1.0">
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/refreshFab"
+            android:id="@+id/searchFab"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:src="@drawable/baseline_cached_white_48dp" />
+            android:src="@drawable/baseline_search_white_48dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/toFirstFab"

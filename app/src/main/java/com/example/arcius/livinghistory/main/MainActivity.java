@@ -39,13 +39,11 @@ public class MainActivity extends AppCompatActivity {
             LocalDate date = (LocalDate) savedInstanceState.getSerializable(CURRENT_DATE_KEY);
             presenter.setCurrentDate(date);
         }
-
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(CURRENT_DATE_KEY,presenter.getCurrentDate());
-        System.out.println("onSaveInstanceState");
         super.onSaveInstanceState(outState);
     }
 

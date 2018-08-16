@@ -17,6 +17,7 @@ public interface MainContract {
             void addData(Card card);
             void addData(List<Card> cards);
             void updateData(List<Card> cards);
+            void showSearch();
             void showCard(String eventID);
             void showDate(String date);
             void showYear(String year);
