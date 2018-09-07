@@ -1,5 +1,6 @@
 package com.example.arcius.livinghistory.data;
 
+
 public class Card {
 
     public CardTypes getType() {

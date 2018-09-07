@@ -24,27 +24,28 @@ import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.event.EventActivity;
 import com.example.arcius.livinghistory.main.Adapters.CardAdapter;
+import com.example.arcius.livinghistory.search.SearchActivity;
 
 import java.util.List;
 
 public class MainFragment extends Fragment implements MainContract.View {
 
-    MainContract.Presenter presenter;
-    CardAdapter adapter;
+    private MainContract.Presenter presenter;
+    private CardAdapter adapter;
 
-    SwipeRefreshLayout swipeRefreshLayout;
-    RecyclerView recyclerView;
-    ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
 
-    Animation animationFadeOut;
+    private Animation animationFadeOut;
 
-    LayoutAnimationController controllerFadeOut;
-    LayoutAnimationController controllerFromRight;
-    LayoutAnimationController controllerFromLeft;
-    LayoutAnimationController controllerSlideDown;
+    private LayoutAnimationController controllerFadeOut;
+    private LayoutAnimationController controllerFromRight;
+    private LayoutAnimationController controllerFromLeft;
+    private LayoutAnimationController controllerSlideDown;
 
-    ImageButton incDayButton;
-    ImageButton decDayButton;
+    private ImageButton incDayButton;
+    private ImageButton decDayButton;
 
     private TextView date;
     private TextView daysText;
@@ -142,19 +143,15 @@ public class MainFragment extends Fragment implements MainContract.View {
             }
         });
 
-        FloatingActionButton refreshFab = view.findViewById(R.id.refreshFab);
+        FloatingActionButton searchFab = view.findViewById(R.id.searchFab);
         FloatingActionButton tofirstFab = view.findViewById(R.id.toFirstFab);
 
-        refreshFab.setOnClickListener(new View.OnClickListener() {
+        searchFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                swipeRefreshLayout.setRefreshing(true);
-                presenter.refreshCards();
-                swipeRefreshLayout.setRefreshing(false);
+                showSearch();
             }
         });
-
-
 
         tofirstFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,6 +196,13 @@ public class MainFragment extends Fragment implements MainContract.View {
     public void updateData(List<Card> cards) {
         adapter.clear();
         this.addData(cards);
+    }
+
+    @Override
+    public void showSearch() {
+        Intent intent = new Intent(this.getContext(), SearchActivity.class);
+        intent.putExtra(SearchActivity.EXTRA_TODAY, presenter.getCurrentDate());
+        startActivity(intent);
     }
 
     @Override
