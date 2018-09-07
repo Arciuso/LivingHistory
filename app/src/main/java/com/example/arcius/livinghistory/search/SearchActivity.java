@@ -31,12 +31,12 @@ public class SearchActivity extends AppCompatActivity {
             transaction.commit();
         }
 
+        LocalDate today = (LocalDate) getIntent().getSerializableExtra(EXTRA_TODAY);
+        presenter = new SearchPresenter(searchFragment, today);
+
         if(savedInstanceState != null) {
             LocalDate date = (LocalDate) savedInstanceState.getSerializable(CURRENT_DATE_KEY);
             presenter.setCurrentDate(date);
-        } else {    //First started
-            String today = getIntent().getStringExtra(EXTRA_TODAY);
-            presenter = new SearchPresenter(searchFragment, today);
         }
     }
 

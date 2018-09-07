@@ -201,7 +201,7 @@ public class MainFragment extends Fragment implements MainContract.View {
     @Override
     public void showSearch() {
         Intent intent = new Intent(this.getContext(), SearchActivity.class);
-        intent.putExtra(SearchActivity.EXTRA_TODAY, presenter.getCurrentDate().toString("MM/dd/YYYY"));
+        intent.putExtra(SearchActivity.EXTRA_TODAY, presenter.getCurrentDate());
         startActivity(intent);
     }
 

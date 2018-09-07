@@ -117,7 +117,8 @@ public class IntroPresenter implements IntroContract.Presenter.Settings {
     public void saveYear() {
         SharedPreferences sharedPreferences = this.view.getContext().getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("year", year);
+        editor.putInt("war_year", year);
+        editor.putInt("start_year", new LocalDate().getYear());
         editor.apply();
     }
 }

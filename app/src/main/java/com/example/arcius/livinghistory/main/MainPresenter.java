@@ -1,7 +1,5 @@
 package com.example.arcius.livinghistory.main;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
 
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
@@ -24,20 +22,25 @@ public class MainPresenter implements MainContract.Presenter {
     private final static LocalDate startDate = new LocalDate(1939, 9, 1);
     private final static LocalDate endDate = new LocalDate(1945, 9, 2);
 
-    private int year = 1939;
+    private int year;       //Operating year
+
+    private int warYear;    //Year of war to begin
+    private int startYear;  //Year when the app was set
+
 
     private LocalDate myDate = new LocalDate(year, LocalDate.now().getMonthOfYear(), LocalDate.now().getDayOfMonth());
     private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 
-    MainPresenter(MainContract.View view) {
+    MainPresenter(MainContract.View view, int year, int startYear) {
         this.view = view;
         this.view.setPresenter(this);
+        this.year = year;
+        this.warYear = year;
+        this.startYear = startYear;
     }
 
     @Override
     public void start() {
-        SharedPreferences sp = this.view.getContext().getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
-        this.year = sp.getInt("year", 1939);
         this.myDate = myDate.withYear(this.year);
 
         setText();
@@ -64,8 +67,22 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void loadToday() {
+
         myDate = new LocalDate();
-        myDate = myDate.withYear(this.year);
+
+        if(this.startYear == myDate.getYear()) {    //Year of starting
+            this.year = warYear;
+            myDate = myDate.withYear(this.warYear);
+        } else {
+            int difference = myDate.getYear() - this.startYear;
+
+            if(this.warYear + difference > 1945) {  //Over the 1945, start over again
+                myDate = myDate.withYear(this.warYear);
+            } else {                                //Is in range of 1939 and 1945
+                this.year = this.year + difference;
+                myDate = myDate.withYear(this.year);
+            }
+        }
 
         //TODO load today
         List<Card> cards = new ArrayList<>();
@@ -137,6 +154,7 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void setCurrentDate(LocalDate date) {
         this.myDate = date;
+        this.year = date.getYear();
     }
 
     @Override

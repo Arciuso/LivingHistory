@@ -23,7 +23,6 @@ public interface MainContract {
             void showYear(String year);
             void showDays(String days);
             void showDaysText(String text);
-            Context getContext();
     }
 
     interface Presenter {
