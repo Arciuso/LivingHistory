@@ -5,7 +5,6 @@ import org.joda.time.LocalDate;
 public interface SearchContract {
 
     interface View {
-        void setPresenter(SearchContract.Presenter presenter);
         void setCalendarDate(long milisec);
         void showDays(String days);
         void showDaysText(String text);
@@ -14,8 +13,11 @@ public interface SearchContract {
 
     interface Presenter {
         void start();
+        void takeView(SearchContract.View view);
+        void dropView();
         LocalDate getCurrentDate();
         void setCurrentDate(LocalDate date);
         void dateChanged(int year, int month, int dayOfMonth);
+
     }
 }

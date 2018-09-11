@@ -1,8 +1,5 @@
 package com.example.arcius.livinghistory.main;
 
-import android.content.Context;
-import android.view.animation.Animation;
-
 import com.example.arcius.livinghistory.data.Card;
 
 import org.joda.time.LocalDate;
@@ -12,8 +9,6 @@ import java.util.List;
 public interface MainContract {
 
     interface View {
-
-            void setPresenter(MainContract.Presenter presenter);
             void addData(Card card);
             void addData(List<Card> cards);
             void updateData(List<Card> cards);
@@ -27,6 +22,8 @@ public interface MainContract {
 
     interface Presenter {
         void start();
+        void takeView(MainContract.View view);
+        void dropView();
         void initData();
         void decrementDay();
         void incrementDay();

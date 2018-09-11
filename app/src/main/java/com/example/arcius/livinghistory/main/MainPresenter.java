@@ -3,6 +3,7 @@ package com.example.arcius.livinghistory.main;
 
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
+import com.example.arcius.livinghistory.di.ActivityScoped;
 
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -15,25 +16,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+@ActivityScoped
 public class MainPresenter implements MainContract.Presenter {
 
+    @Nullable
     private MainContract.View view;
 
     private final static LocalDate startDate = new LocalDate(1939, 9, 1);
     private final static LocalDate endDate = new LocalDate(1945, 9, 2);
+
 
     private int year;       //Operating year
 
     private int warYear;    //Year of war to begin
     private int startYear;  //Year when the app was set
 
-
     private LocalDate myDate = new LocalDate(year, LocalDate.now().getMonthOfYear(), LocalDate.now().getDayOfMonth());
     private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 
-    MainPresenter(MainContract.View view, int year, int startYear) {
-        this.view = view;
-        this.view.setPresenter(this);
+    @Inject
+    MainPresenter(@Named("Year") int year,@Named("StartYear") int startYear) {
         this.year = year;
         this.warYear = year;
         this.startYear = startYear;
@@ -45,6 +51,16 @@ public class MainPresenter implements MainContract.Presenter {
 
         setText();
         setDate();
+    }
+
+    @Override
+    public void takeView(MainContract.View view) {
+        this.view = view;
+    }
+
+    @Override
+    public void dropView() {
+        this.view = null;
     }
 
     @Override
