@@ -17,6 +17,8 @@ import com.example.arcius.livinghistory.main.MainContract;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private MainContract.View view;
@@ -43,7 +45,6 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.fullText = view.findViewById(R.id.fullText);
         }
 
-        /* TODO Pridat dalsi ViewHolderClassic pre iny typ Card */
     }
 
     class ViewHolderPic extends ViewHolderClassic {

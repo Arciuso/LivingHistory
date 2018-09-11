@@ -1,11 +1,19 @@
 package com.example.arcius.livinghistory.search;
 
+import android.support.annotation.Nullable;
+
+import com.example.arcius.livinghistory.di.ActivityScoped;
+
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
+
+@ActivityScoped
 public class SearchPresenter implements SearchContract.Presenter {
 
     private final static LocalDate startDate = new LocalDate(1939, 9, 1);
@@ -13,20 +21,31 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 
+    @Nullable
     private SearchContract.View view;
 
+    @Nullable
     private LocalDate today;
 
-    SearchPresenter( SearchContract.View view, LocalDate today) {
-        this.view = view;
-        this.view.setPresenter(this);
-        this.today = today;
+    @Inject
+    SearchPresenter(@Nullable LocalDate date) {
+        this.today = date;
     }
 
     @Override
     public void start() {
         setCalendar();
         setText();
+    }
+
+    @Override
+    public void takeView(SearchContract.View view) {
+        this.view = view;
+    }
+
+    @Override
+    public void dropView() {
+        this.view = null;
     }
 
     @Override

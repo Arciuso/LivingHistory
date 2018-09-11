@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,33 +12,40 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
+import com.example.arcius.livinghistory.di.ActivityScoped;
 import com.example.arcius.livinghistory.main.MainActivity;
 
+import javax.inject.Inject;
 
-public class SearchFragment extends Fragment implements SearchContract.View {
+import dagger.android.support.DaggerFragment;
 
-    private SearchContract.Presenter presenter;
+@ActivityScoped
+public class SearchFragment extends DaggerFragment implements SearchContract.View {
+
+    @Inject
+    SearchContract.Presenter presenter;
 
     private CalendarView calendarView;
 
     private TextView daysText;
     private TextView days;
 
-    private Button button;
+    @Inject
+    public SearchFragment() {
 
-    public SearchFragment newInstance() {
-        return new SearchFragment();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        presenter.start();
+        this.presenter.takeView(this);
+        this.presenter.start();
     }
 
     @Override
-    public void setPresenter(SearchContract.Presenter presenter) {
-        this.presenter = presenter;
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.dropView();
     }
 
     @Nullable
@@ -56,7 +62,7 @@ public class SearchFragment extends Fragment implements SearchContract.View {
             }
         });
 
-        button = view.findViewById(R.id.searchButton);
+        Button button = view.findViewById(R.id.searchButton);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

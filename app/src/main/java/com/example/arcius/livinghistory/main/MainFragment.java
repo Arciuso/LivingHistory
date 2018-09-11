@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,15 +21,23 @@ import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
+import com.example.arcius.livinghistory.di.ActivityScoped;
 import com.example.arcius.livinghistory.event.EventActivity;
 import com.example.arcius.livinghistory.main.Adapters.CardAdapter;
 import com.example.arcius.livinghistory.search.SearchActivity;
 
 import java.util.List;
 
-public class MainFragment extends Fragment implements MainContract.View {
+import javax.inject.Inject;
 
-    private MainContract.Presenter presenter;
+import dagger.android.support.DaggerFragment;
+
+@ActivityScoped
+public class MainFragment extends DaggerFragment implements MainContract.View {
+
+    @Inject
+    MainContract.Presenter presenter;
+
     private CardAdapter adapter;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -52,19 +59,23 @@ public class MainFragment extends Fragment implements MainContract.View {
     private TextView year;
     private TextView days;
 
-    public MainFragment newInstance() {
-        return new MainFragment();
-    }
+    @Inject
+    public MainFragment() {
 
-    @Override
-    public void setPresenter(MainContract.Presenter presenter) {
-        this.presenter = presenter;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        this.presenter.takeView(this);
         this.presenter.start();
+        this.presenter.initData(); //TODO
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.presenter.dropView();
     }
 
     @Nullable
@@ -85,7 +96,6 @@ public class MainFragment extends Fragment implements MainContract.View {
         adapter = new CardAdapter(this,getContext());
         recyclerView.setAdapter(adapter);
 
-        this.presenter.initData(); //TODO
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
