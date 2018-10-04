@@ -3,6 +3,8 @@ package com.example.arcius.livinghistory.main;
 
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
+import com.example.arcius.livinghistory.data.repository.CardRepository;
+import com.example.arcius.livinghistory.data.repository.DataInterface;
 import com.example.arcius.livinghistory.di.ActivityScoped;
 
 import org.joda.time.Days;
@@ -22,6 +24,8 @@ import javax.inject.Named;
 
 @ActivityScoped
 public class MainPresenter implements MainContract.Presenter {
+
+    private final CardRepository repository = new CardRepository();
 
     @Nullable
     private MainContract.View view;
@@ -49,6 +53,8 @@ public class MainPresenter implements MainContract.Presenter {
     public void start() {
         this.myDate = myDate.withYear(this.year);
 
+        this.view.hideTodayFAB();
+
         setText();
         setDate();
     }
@@ -71,14 +77,34 @@ public class MainPresenter implements MainContract.Presenter {
            TODO 2. load data
          */
 
-        List<Card> cards = new ArrayList<>();
-        cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
+
+        final List<Card> cards = new ArrayList<>();
+
+    /*    cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
         cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
         cards.add(new Card("2", "10:14", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
         cards.add(new Card("3", "11:10", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
         cards.add(new Card("4", "12:52", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
 
-        view.addData(cards);
+    */
+
+        String testDate = "20181408";
+
+        System.out.println("INIT DATA !");
+
+        repository.getCards(new DataInterface.LoadCardListener() {
+            @Override
+            public void onLoading() {
+                view.showLoading();
+            }
+
+            @Override
+            public void onLoaded(List<Card> cards) {
+                view.addData(cards);
+            }
+        }, testDate);
+
+       // view.addData(cards);
     }
 
     @Override

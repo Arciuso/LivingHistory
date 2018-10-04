@@ -30,6 +30,7 @@ public class Card {
     private String fullText;
 
     private int resourceImage;
+    private String linkImage;
 
     public Card( String eventID, String time, String mainTitle, String fullText ){
         this.type = CardTypes.Classic;
@@ -46,6 +47,15 @@ public class Card {
         this.mainTitle = mainTitle;
         this.fullText = fullText;
         this.resourceImage = resourceImage;
+    }
+
+    public Card( String eventID, String time, String mainTitle, String fullText, String linkImage ){
+        this.type = CardTypes.Classic;
+        this.eventID = eventID;
+        this.time = time;
+        this.mainTitle = mainTitle;
+        this.fullText = fullText;
+        this.linkImage = linkImage;
     }
 
     public String getTime() {

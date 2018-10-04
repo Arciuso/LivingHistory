@@ -18,6 +18,11 @@ public interface MainContract {
             void showYear(String year);
             void showDays(String days);
             void showDaysText(String text);
+            void hideTodayFAB();
+            void hideNoInternetConnection();
+            void showNoInternetConnection();
+            void showLoading();
+            void hideLoading();
     }
 
     interface Presenter {
