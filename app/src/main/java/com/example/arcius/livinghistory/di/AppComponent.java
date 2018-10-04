@@ -3,6 +3,7 @@ package com.example.arcius.livinghistory.di;
 import android.app.Application;
 
 import com.example.arcius.livinghistory.LHApplication;
+import com.example.arcius.livinghistory.data.repository.CardRepository;
 
 import javax.inject.Singleton;
 

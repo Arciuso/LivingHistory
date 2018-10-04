@@ -45,6 +45,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     private ProgressBar progressBar;
 
     private Animation animationFadeOut;
+    private Animation animationFadeIn;
 
     private LayoutAnimationController controllerFadeOut;
     private LayoutAnimationController controllerFromRight;
@@ -54,10 +55,14 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     private ImageButton incDayButton;
     private ImageButton decDayButton;
 
+    private FloatingActionButton tofirstFab;
+
     private TextView date;
     private TextView daysText;
     private TextView year;
     private TextView days;
+
+    private TextView connectionText;
 
     @Inject
     public MainFragment() {
@@ -93,9 +98,10 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         year = view.findViewById(R.id.yearText);
         daysText = view.findViewById(R.id.textView);
 
+        connectionText = view.findViewById(R.id.connectionText);
+
         adapter = new CardAdapter(this,getContext());
         recyclerView.setAdapter(adapter);
-
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -109,6 +115,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         decDayButton = view.findViewById(R.id.decButton);
 
         this.animationFadeOut = AnimationUtils.loadAnimation(getContext(),R.anim.fade_out);
+        this.animationFadeIn = AnimationUtils.loadAnimation(getContext(),R.anim.fade_in);
 
         this.controllerFadeOut = AnimationUtils.loadLayoutAnimation(getContext(),R.anim.layout_anim_to_fade_out);
         this.controllerFromLeft = AnimationUtils.loadLayoutAnimation(getContext(),R.anim.layout_anim_from_left);
@@ -126,10 +133,18 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                         recyclerView.clearAnimation();
                         recyclerView.setVisibility(View.INVISIBLE);
                         progressBar.setVisibility(View.VISIBLE);
+
                         presenter.incrementDay();
+
                         runFromRightAnimation();
+
+                        if(presenter.isToday()) runHideFAB();
+                        else runShowFAB();
+
                     }
                 },animationFadeOut.getDuration() + 50);
+
+
             }
         });
 
@@ -142,19 +157,24 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                     @Override
                     public void run() {     //Instantly after animation ends
                         recyclerView.clearAnimation();
-                        recyclerView.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.VISIBLE);
+                        showLoading();
 
                         presenter.decrementDay();
 
                         runFromLeftAnimation();
+
+                        if(presenter.isToday()) runHideFAB();
+                        else runShowFAB();
+
                     }
                 },animationFadeOut.getDuration() + 50);
+
+
             }
         });
 
         FloatingActionButton searchFab = view.findViewById(R.id.searchFab);
-        FloatingActionButton tofirstFab = view.findViewById(R.id.toFirstFab);
+        tofirstFab = view.findViewById(R.id.toFirstFab);
 
         searchFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,13 +187,13 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
             @Override
             public void onClick(View v) {
                 runFadeOutAnimation();
+                runHideFAB();
 
                 new Handler().postDelayed(new Runnable() {  //TODO
                     @Override
                     public void run() {     //Instantly after animation ends
                         recyclerView.clearAnimation();
-                        recyclerView.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.VISIBLE);
+                        showLoading();
 
                         presenter.loadToday();
 
@@ -182,6 +202,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                 },animationFadeOut.getDuration() + 50);
             }
         });
+
 
         return view;
     }
@@ -194,12 +215,18 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     @Override
-    public void addData(List<Card> cards) {
-        for (Card card : cards) {
-            adapter.add(card);
-        }
+    public void addData(final List<Card> cards) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Card card : cards) {
+                    adapter.add(card);
+                }
 
-        adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
+                runSlideDownAnimation();
+            }
+        });
     }
 
     @Override
@@ -242,9 +269,13 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         this.daysText.setText(text);
     }
 
+    @Override
+    public void hideTodayFAB() {
+        this.tofirstFab.setVisibility(View.GONE);
+    }
+
     private void runFromRightAnimation() {
-        recyclerView.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.INVISIBLE);
+        hideLoading();
         recyclerView.setLayoutAnimation(controllerFromRight);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
@@ -291,8 +322,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     private void runSlideDownAnimation() {
-        progressBar.setVisibility(View.INVISIBLE);
-        recyclerView.setVisibility(View.VISIBLE);
+        hideLoading();
         recyclerView.setLayoutAnimation(controllerSlideDown);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
@@ -315,9 +345,35 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         recyclerView.scheduleLayoutAnimation();
     }
 
+    private void runShowFAB() {
+        if(tofirstFab.getVisibility() == View.GONE ) {  //To not run animation twice
+            tofirstFab.setVisibility(View.VISIBLE);
+            tofirstFab.startAnimation(animationFadeIn);
+        }
+    }
+
+    private void runHideFAB() {
+        animationFadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                tofirstFab.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        tofirstFab.startAnimation(animationFadeOut);
+    }
+
     private void runFromLeftAnimation() {
-        recyclerView.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.INVISIBLE);
+        hideLoading();
         recyclerView.setLayoutAnimation(controllerFromLeft);
         recyclerView.getAdapter().notifyDataSetChanged();
         recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
@@ -340,4 +396,35 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         recyclerView.scheduleLayoutAnimation();
     }
 
+    @Override
+    public void hideNoInternetConnection() {
+        this.connectionText.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showNoInternetConnection() {
+        this.connectionText.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showLoading() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void hideLoading() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                recyclerView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
 }
