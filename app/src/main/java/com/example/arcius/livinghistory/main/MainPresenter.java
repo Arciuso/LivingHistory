@@ -12,7 +12,6 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -70,45 +69,33 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void initData() {    //TODO
-
-        /*
-           TODO 1. check if data is not already saved in cache files
-           TODO 2. load data
-         */
-
-
-        final List<Card> cards = new ArrayList<>();
-
-    /*    cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-        cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-        cards.add(new Card("2", "10:14", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-        cards.add(new Card("3", "11:10", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-        cards.add(new Card("4", "12:52", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-
-    */
-
-        String testDate = "20181408";
-
-        System.out.println("INIT DATA !");
+    public void initData() {
 
         repository.getCards(new DataInterface.LoadCardListener() {
             @Override
             public void onLoading() {
+                view.hideNoInternetConnection();
                 view.showLoading();
             }
 
             @Override
             public void onLoaded(List<Card> cards) {
-                view.addData(cards);
+                view.hideNoInternetConnection();
+                view.updateData(cards);
             }
-        }, testDate);
 
-       // view.addData(cards);
+            @Override
+            public void onNoConnection() {
+                view.showNoInternetConnection();
+                view.hideLoading();
+            }
+        }, getDateID());
     }
 
     @Override
     public void loadToday() {
+
+        getDateID();
 
         myDate = new LocalDate();
 
@@ -126,15 +113,7 @@ public class MainPresenter implements MainContract.Presenter {
             }
         }
 
-        //TODO load today
-        List<Card> cards = new ArrayList<>();
-        cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-        cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-        cards.add(new Card("2", "10:14", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-        cards.add(new Card("3", "11:10", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-        cards.add(new Card("4", "12:52", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-
-        view.updateData(cards);
+        initData();
 
         setText();
         setDate();
@@ -156,12 +135,7 @@ public class MainPresenter implements MainContract.Presenter {
             setText();
             setDate();
 
-            List<Card> cards = new ArrayList<>();
-            cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-            cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-            cards.add(new Card("4", "12:52", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-
-            view.updateData(cards);
+            initData();
         }
     }
 
@@ -176,15 +150,7 @@ public class MainPresenter implements MainContract.Presenter {
             setText();
             setDate();
 
-            List<Card> cards = new ArrayList<>();
-            cards.add(new Card("0", "08:34", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem.", R.drawable.war_pic));
-            cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-            cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-            cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-            cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-            cards.add(new Card("1", "09:50", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse et pretium eros.", "Donec euismod nec ipsum et euismod. In diam diam, finibus vel mauris vitae, vestibulum tempus lectus. Duis dolor leo, mattis vel facilisis eu, accumsan a lorem."));
-
-            view.updateData(cards);
+            initData();
         }
     }
 
@@ -263,5 +229,11 @@ public class MainPresenter implements MainContract.Presenter {
             month = months[num];
         }
         return month;
+    }
+
+    private String getDateID() {
+        String id = myDate.toString();
+        id = id.replace("-","");
+        return id;
     }
 }

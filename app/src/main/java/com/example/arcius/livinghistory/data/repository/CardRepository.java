@@ -12,7 +12,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -25,6 +27,8 @@ public class CardRepository implements DataInterface {
 
     private final static String getDateScript = "get_date.php?date=";
 
+    private final static Map<String, List<Card>> cache = new LinkedHashMap<>();
+
 
     /**
      * Help : https://stackoverflow.com/questions/38372571/android-how-can-i-read-a-text-file-from-a-url
@@ -33,40 +37,44 @@ public class CardRepository implements DataInterface {
     @Override
     public void getCards(final LoadCardListener listener, final String id) {
 
-        new Thread(new Runnable() {
+        List<Card> cards;
 
-            List<Card> cards;
-            HttpURLConnection connection;
+        if (cache.containsKey(id)) {    //Load from cache
+            cards = cache.get(id);
+            listener.onLoaded(cards);
+        } else {                        //Load from remote database
 
-            @Override
-            public void run() {
-                listener.onLoading();
+            new Thread(new Runnable() {
 
-                try {
-                    System.out.println("RUN !");
-                    URL url = new URL(link + getDateScript + id);
+                List<Card> cards;
+                HttpURLConnection connection;
 
-                    connection = (HttpURLConnection) url.openConnection();
+                @Override
+                public void run() {
+                    listener.onLoading();
 
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    try {
+                        URL url = new URL(link + getDateScript + id);
 
+                        connection = (HttpURLConnection) url.openConnection();
 
-                    cards = readJsonStream(in);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
+                        cards = readJsonStream(in);
+                        cache.put(id, cards);
+                        listener.onLoaded(cards);
 
-                } catch (MalformedURLException e) {
-                    System.out.println("DOJEBANE 1");
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    System.out.println("DOJEBANE 2");
-                    e.printStackTrace();
-                } finally {
-                    connection.disconnect();
-                    listener.onLoaded(cards);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        listener.onNoConnection();
+                        e.printStackTrace();
+                    } finally {
+                        connection.disconnect();
+                    }
                 }
-            }
-        }).start();
-
+            }).start();
+        }
     }
 
     private List<Card> readJsonStream(BufferedReader in) throws IOException {
@@ -134,7 +142,7 @@ public class CardRepository implements DataInterface {
 
     }
 
-    private List<Double> readDoublesArray(JsonReader reader) throws IOException {
+    private List<Double> readDoublesArray(JsonReader reader) throws IOException {   //Used for Map
         List<Double> doubles = new ArrayList<Double>();
 
         reader.beginArray();
