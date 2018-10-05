@@ -9,7 +9,7 @@ public interface DataInterface {
     interface LoadCardListener {
         void onLoading();
         void onLoaded(List<Card> cards);
-        //void onNoConnection();
+        void onNoConnection();
     }
 
     void getCards(LoadCardListener listener, String id);
