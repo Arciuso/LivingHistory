@@ -1,7 +1,6 @@
 package com.example.arcius.livinghistory.main;
 
 
-import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
 import com.example.arcius.livinghistory.data.repository.DataInterface;
@@ -24,7 +23,7 @@ import javax.inject.Named;
 @ActivityScoped
 public class MainPresenter implements MainContract.Presenter {
 
-    private final CardRepository repository = new CardRepository();
+    private final CardRepository repository;
 
     @Nullable
     private MainContract.View view;
@@ -42,10 +41,11 @@ public class MainPresenter implements MainContract.Presenter {
     private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 
     @Inject
-    MainPresenter(@Named("Year") int year,@Named("StartYear") int startYear) {
+    MainPresenter(@Named("Year") int year,@Named("StartYear") int startYear, CardRepository repository ) {
         this.year = year;
         this.warYear = year;
         this.startYear = startYear;
+        this.repository = repository;
     }
 
     @Override
@@ -74,20 +74,30 @@ public class MainPresenter implements MainContract.Presenter {
         repository.getCards(new DataInterface.LoadCardListener() {
             @Override
             public void onLoading() {
-                view.hideNoInternetConnection();
+                view.hideMessenge();
                 view.showLoading();
             }
 
             @Override
             public void onLoaded(List<Card> cards) {
-                view.hideNoInternetConnection();
+                System.out.println("onLoaded " + getDateID());
+                view.hideMessenge();
+                view.hideLoading();
                 view.updateData(cards);
             }
 
             @Override
             public void onNoConnection() {
+                System.out.println("onNoConnection " + getDateID());
                 view.showNoInternetConnection();
                 view.hideLoading();
+            }
+
+            @Override
+            public void onNoData() {
+                System.out.println("onNoData " + getDateID());
+                view.hideLoading();
+                view.showNoData();
             }
         }, getDateID());
     }
@@ -120,8 +130,8 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void refreshCards() {    //TODO ask database for this.time events, if so call initData();
-        System.out.println("Refresh cards !");
+    public void refreshCards() {
+        initData();
     }
 
     @Override

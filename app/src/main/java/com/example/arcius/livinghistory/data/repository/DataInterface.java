@@ -10,7 +10,15 @@ public interface DataInterface {
         void onLoading();
         void onLoaded(List<Card> cards);
         void onNoConnection();
+        void onNoData();
     }
+
+    /*
+    interface LoadImageListener {
+        void onLoaded(Card card);
+        void onNoConnection();
+    }
+    */
 
     void getCards(LoadCardListener listener, String id);
 }

@@ -9,8 +9,9 @@ public interface EventContract {
         void showYear(String year);
         void showTime(String time);
         void showTitle(String title);
+        void showDate(String date);
         void showText(String text);
-        void showLocation(); //TODO axis
+        void showLocation(float latitude, float longitude);
         void showLocationText(String text);
     }
 

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
@@ -26,22 +27,36 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Card> cards;
 
-    class ViewHolderClassic extends RecyclerView.ViewHolder {
+    class ViewHolderSingle extends RecyclerView.ViewHolder {
 
         CardView card;
 
         TextView time;
         TextView mainTitle;
-        TextView fullText;
+        TextView countryText;
 
 
-        ViewHolderClassic(View view) {
+        ViewHolderSingle(View view) {
             super(view);
 
             this.card = view.findViewById(R.id.card);
 
             this.time = view.findViewById(R.id.time);
             this.mainTitle = view.findViewById(R.id.mainTitle);
+            this.countryText = view.findViewById(R.id.countryText);
+        }
+
+    }
+
+    class ViewHolderClassic extends ViewHolderSingle {
+
+
+        TextView fullText;
+
+
+        ViewHolderClassic(View view) {
+            super(view);
+
             this.fullText = view.findViewById(R.id.fullText);
         }
 
@@ -50,19 +65,16 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     class ViewHolderPic extends ViewHolderClassic {
 
         ImageView image;
+        ProgressBar progressBar;
 
         ViewHolderPic(View view) {
             super(view);
 
             this.image = view.findViewById(R.id.image);
-
-            this.card = view.findViewById(R.id.card_pic);
-
-            this.time = view.findViewById(R.id.time);
-            this.mainTitle = view.findViewById(R.id.mainTitle);
-            this.fullText = view.findViewById(R.id.fullText);
+            this.progressBar = view.findViewById(R.id.progressBar);
         }
     }
+
 
     public CardAdapter(MainContract.View view, Context context) {
         this.view = view;
@@ -87,6 +99,8 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 return Card.CardTypes.Classic.getValue();
             case Image:
                 return Card.CardTypes.Image.getValue();
+            case Single:
+                return Card.CardTypes.Single.getValue();
         }
 
         return 0;
@@ -105,8 +119,8 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case 1:    //Image
                 cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout_pic, parent, false);
                 return new ViewHolderPic(cardView);
-            default:    //Classic
-                cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout, parent, false);
+            default:    //Classic / Single
+                cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_layout_simple, parent, false);
                 return new ViewHolderClassic(cardView);
         }
     }
@@ -122,13 +136,14 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 classicHolder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        view.showCard(card.getEventID());
+                        view.showCard(card);
                     }
                 });
 
                 classicHolder.time.setText(card.getTime());
                 classicHolder.mainTitle.setText(card.getMainTitle());
                 classicHolder.fullText.setText(card.getFullText());
+                classicHolder.countryText.setText(card.getLocation().getCountry());
 
                 break;
             case 1 :    //Image
@@ -137,17 +152,31 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 picHolder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        view.showCard(card.getEventID());
+                        view.showCard(card);
                     }
                 });
 
                 picHolder.time.setText(card.getTime());
                 picHolder.mainTitle.setText(card.getMainTitle());
                 picHolder.fullText.setText(card.getFullText());
-
-                picHolder.image.setImageDrawable(context.getResources().getDrawable(card.getResourceImage()));
+                picHolder.countryText.setText(card.getLocation().getCountry());
+                if(card.isPictureReady()) {
+                    picHolder.progressBar.setVisibility(View.GONE);
+                    picHolder.image.setImageBitmap(card.getImage());
+                } else {
+                    picHolder.progressBar.setVisibility(View.VISIBLE);
+                }
 
                 break;
+            case 2 :    //Single
+                final ViewHolderSingle singleHolder = (ViewHolderSingle) holder;
+
+                singleHolder.time.setText(card.getTime());
+                singleHolder.mainTitle.setText(card.getMainTitle());
+                singleHolder.countryText.setText(card.getLocation().getCountry());
+
+                break;
+
         }
     }
 

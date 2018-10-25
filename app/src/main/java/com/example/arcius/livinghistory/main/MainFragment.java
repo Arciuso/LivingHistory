@@ -62,7 +62,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     private TextView year;
     private TextView days;
 
-    private TextView connectionText;
+    private TextView messengeText;
 
     @Inject
     public MainFragment() {
@@ -98,7 +98,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         year = view.findViewById(R.id.yearText);
         daysText = view.findViewById(R.id.textView);
 
-        connectionText = view.findViewById(R.id.connectionText);
+        messengeText = view.findViewById(R.id.messengeText);
 
         adapter = new CardAdapter(this,getContext());
         recyclerView.setAdapter(adapter);
@@ -221,10 +221,8 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
             public void run() {
                 for (Card card : cards) {
                     adapter.add(card);
+                    adapter.notifyDataSetChanged();
                 }
-
-                adapter.notifyDataSetChanged();
-                runSlideDownAnimation();
             }
         });
     }
@@ -243,9 +241,9 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     @Override
-    public void showCard(String eventID) {
+    public void showCard(Card card) {
         Intent intent = new Intent(this.getContext(), EventActivity.class);
-        intent.putExtra(EventActivity.EXTRA_EVENT_ID, eventID);
+        intent.putExtra(EventActivity.EXTRA_EVENT_ID, card);
         startActivity(intent);
     }
 
@@ -299,26 +297,32 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     private void runFadeOutAnimation() {
-        recyclerView.setLayoutAnimation(controllerFadeOut);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
-            public void onAnimationStart(Animation animation) {
-                incDayButton.setEnabled(false);
-                decDayButton.setEnabled(false);
-            }
+            public void run() {
+                recyclerView.setLayoutAnimation(controllerFadeOut);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        incDayButton.setEnabled(false);
+                        decDayButton.setEnabled(false);
+                    }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
 
-            }
+                    }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
 
+                    }
+                });
+                recyclerView.scheduleLayoutAnimation();
             }
         });
-        recyclerView.scheduleLayoutAnimation();
+
     }
 
     private void runSlideDownAnimation() {
@@ -397,13 +401,41 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     @Override
-    public void hideNoInternetConnection() {
-        this.connectionText.setVisibility(View.GONE);
+    public void hideMessenge() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messengeText.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
     public void showNoInternetConnection() {
-        this.connectionText.setVisibility(View.VISIBLE);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                messengeText.setVisibility(View.VISIBLE);
+                String msg = getResources().getString(R.string.no_connection);
+                messengeText.setText(msg);
+            }
+        });
+    }
+
+    @Override
+    public void showNoData() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                messengeText.setVisibility(View.VISIBLE);
+                String msg = getResources().getString(R.string.no_data);
+                messengeText.setText(msg);
+            }
+        });
     }
 
     @Override

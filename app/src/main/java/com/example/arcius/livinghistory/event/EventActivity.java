@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.arcius.livinghistory.R;
+import com.example.arcius.livinghistory.data.Card;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -21,7 +22,7 @@ public class EventActivity extends AppCompatActivity {
 
     private void loadEventFragment() {
 
-        String eventID = getIntent().getStringExtra(EXTRA_EVENT_ID);
+        Card card = (Card) getIntent().getSerializableExtra(EXTRA_EVENT_ID);
 
         EventFragment eventFragment = (EventFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (eventFragment == null) {
@@ -33,6 +34,6 @@ public class EventActivity extends AppCompatActivity {
             transaction.commit();
         }
 
-        new EventPresenter(eventFragment, eventID);
+        new EventPresenter(eventFragment, card);
     }
 }

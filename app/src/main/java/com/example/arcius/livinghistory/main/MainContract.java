@@ -1,5 +1,7 @@
 package com.example.arcius.livinghistory.main;
 
+import android.content.Context;
+
 import com.example.arcius.livinghistory.data.Card;
 
 import org.joda.time.LocalDate;
@@ -13,16 +15,18 @@ public interface MainContract {
             void addData(List<Card> cards);
             void updateData(List<Card> cards);
             void showSearch();
-            void showCard(String eventID);
+            void showCard(Card card);
             void showDate(String date);
             void showYear(String year);
             void showDays(String days);
             void showDaysText(String text);
             void hideTodayFAB();
-            void hideNoInternetConnection();
+            void hideMessenge();
             void showNoInternetConnection();
+            void showNoData();
             void showLoading();
             void hideLoading();
+            Context getContext();
     }
 
     interface Presenter {
