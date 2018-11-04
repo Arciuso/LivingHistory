@@ -1,7 +1,6 @@
 package com.example.arcius.livinghistory.main;
 
 
-import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
 import com.example.arcius.livinghistory.data.repository.DataInterface;
@@ -24,7 +23,7 @@ import javax.inject.Named;
 @ActivityScoped
 public class MainPresenter implements MainContract.Presenter {
 
-    private final CardRepository repository = new CardRepository();
+    private final CardRepository repository;
 
     @Nullable
     private MainContract.View view;
@@ -42,17 +41,18 @@ public class MainPresenter implements MainContract.Presenter {
     private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 
     @Inject
-    MainPresenter(@Named("Year") int year,@Named("StartYear") int startYear) {
+    MainPresenter(@Named("Year") int year, @Named("StartYear") int startYear, CardRepository repository) {
         this.year = year;
         this.warYear = year;
         this.startYear = startYear;
+        this.repository = repository;
     }
 
     @Override
     public void start() {
         this.myDate = myDate.withYear(this.year);
 
-        this.view.hideTodayFAB();
+        if(isToday()) view.hideTodayFAB();
 
         setText();
         setDate();
@@ -69,25 +69,56 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void initData() {
+    public void initData(final MainFragment.AnimationType animationType) {
 
         repository.getCards(new DataInterface.LoadCardListener() {
             @Override
             public void onLoading() {
-                view.hideNoInternetConnection();
+                view.hideMessenge();
                 view.showLoading();
             }
 
             @Override
             public void onLoaded(List<Card> cards) {
-                view.hideNoInternetConnection();
+                System.out.println("onLoaded " + getDateID());
+                view.hideMessenge();
+                view.hideLoading();
+                view.updateData(cards);
+
+                switch (animationType) {
+                    case None:
+                    case Today:
+                        view.showToday();
+                        break;
+                    case Inc:
+                        view.showIncDay();
+                        break;
+                    case Dec:
+                        view.showDecDay();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPicLoaded(List<Card> cards) {
+                System.out.println("onPicLoaded " + getDateID());
+                view.hideMessenge();
+                view.hideLoading();
                 view.updateData(cards);
             }
 
             @Override
             public void onNoConnection() {
+                System.out.println("onNoConnection " + getDateID());
                 view.showNoInternetConnection();
                 view.hideLoading();
+            }
+
+            @Override
+            public void onNoData() {
+                System.out.println("onNoData " + getDateID());
+                view.hideLoading();
+                view.showNoData();
             }
         }, getDateID());
     }
@@ -95,17 +126,15 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void loadToday() {
 
-        getDateID();
-
         myDate = new LocalDate();
 
-        if(this.startYear == myDate.getYear()) {    //Year of starting
+        if (this.startYear == myDate.getYear()) {    //Year of starting
             this.year = warYear;
             myDate = myDate.withYear(this.warYear);
         } else {
             int difference = myDate.getYear() - this.startYear;
 
-            if(this.warYear + difference > 1945) {  //Over the 1945, start over again
+            if (this.warYear + difference > 1945) {  //Over the 1945, start over again
                 myDate = myDate.withYear(this.warYear);
             } else {                                //Is in range of 1939 and 1945
                 this.year = this.year + difference;
@@ -113,45 +142,45 @@ public class MainPresenter implements MainContract.Presenter {
             }
         }
 
-        initData();
+        initData(MainFragment.AnimationType.Today);
 
         setText();
         setDate();
     }
 
     @Override
-    public void refreshCards() {    //TODO ask database for this.time events, if so call initData();
-        System.out.println("Refresh cards !");
+    public void refreshCards() {
+        initData(MainFragment.AnimationType.None);
     }
 
     @Override
     public void decrementDay() {    //TODO
 
-        myDate = myDate.minusDays(1);
+            myDate = myDate.minusDays(1);
 
-        if(isToday()) {
-            loadToday();
-        } else {
-            setText();
-            setDate();
+            if (isToday()) {
+                loadToday();
+            } else {
+                setText();
+                setDate();
 
-            initData();
-        }
+                initData(MainFragment.AnimationType.Dec);
+            }
     }
 
     @Override
     public void incrementDay() {    //TODO
 
-        myDate = myDate.plusDays(1);
+            myDate = myDate.plusDays(1);
 
-        if(isToday()) {
-            loadToday();
-        } else {
-            setText();
-            setDate();
+            if (isToday()) {
+                loadToday();
+            } else {
+                setText();
+                setDate();
 
-            initData();
-        }
+                initData(MainFragment.AnimationType.Inc);
+            }
     }
 
     @Override
@@ -168,6 +197,16 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public boolean isToday() {
         return myDate.equals(new LocalDate().withYear(this.year));
+    }
+
+    @Override
+    public boolean isAfter() {
+        return myDate.isAfter(new LocalDate(1939, 1, 1));
+    }
+
+    @Override
+    public boolean isBefore() {
+        return myDate.isBefore(new LocalDate(1945, 12, 31));
     }
 
     private void setText() {
@@ -233,7 +272,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     private String getDateID() {
         String id = myDate.toString();
-        id = id.replace("-","");
+        id = id.replace("-", "");
         return id;
     }
 }

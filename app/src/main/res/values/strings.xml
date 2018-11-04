@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">LivingHistory</string>
     <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="no_connection">No internet connection</string>
+    <string name="no_data">No data has been found for this day</string>
 </resources>

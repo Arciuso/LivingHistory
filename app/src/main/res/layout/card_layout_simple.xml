@@ -70,26 +70,5 @@
             app:layout_constraintTop_toBottomOf="@+id/time"
             app:layout_constraintVertical_bias="0.0" />
 
-        <TextView
-            android:id="@+id/fullText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="16dp"
-            android:fadeScrollbars="false"
-            android:fadingEdge="vertical"
-            android:fadingEdgeLength="20dp"
-            android:maxHeight="75dp"
-            android:requiresFadingEdge="vertical"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mainTitle"
-            app:layout_constraintVertical_bias="0.0" />
-
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

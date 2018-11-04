@@ -35,6 +35,10 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class MainFragment extends DaggerFragment implements MainContract.View {
 
+    public enum AnimationType {
+        None, Inc, Dec, Today
+    }
+
     @Inject
     MainContract.Presenter presenter;
 
@@ -62,7 +66,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     private TextView year;
     private TextView days;
 
-    private TextView connectionText;
+    private TextView messengeText;
 
     @Inject
     public MainFragment() {
@@ -74,7 +78,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         super.onResume();
         this.presenter.takeView(this);
         this.presenter.start();
-        this.presenter.initData(); //TODO
+        this.presenter.initData(AnimationType.None); //TODO
     }
 
     @Override
@@ -98,7 +102,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         year = view.findViewById(R.id.yearText);
         daysText = view.findViewById(R.id.textView);
 
-        connectionText = view.findViewById(R.id.connectionText);
+        messengeText = view.findViewById(R.id.messengeText);
 
         adapter = new CardAdapter(this,getContext());
         recyclerView.setAdapter(adapter);
@@ -125,51 +129,35 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         incDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               runFadeOutAnimation();
+                if(presenter.isBefore()) {  //To not over increment
+                    runFadeOutAnimation();
 
-                new Handler().postDelayed(new Runnable() {  //TODO
-                    @Override
-                    public void run() {     //Instantly after animation ends
-                        recyclerView.clearAnimation();
-                        recyclerView.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.VISIBLE);
-
-                        presenter.incrementDay();
-
-                        runFromRightAnimation();
-
-                        if(presenter.isToday()) runHideFAB();
-                        else runShowFAB();
-
-                    }
-                },animationFadeOut.getDuration() + 50);
-
-
+                    new Handler().postDelayed(new Runnable() {  //TODO
+                        @Override
+                        public void run() {     //Instantly after animation ends
+                            System.out.println("VIEW : incDayButton.OnClick()");    //TODO
+                            presenter.incrementDay();
+                        }
+                    },animationFadeOut.getDuration() + 50);
+                }
             }
         });
+
 
         decDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                runFadeOutAnimation();
+                if(presenter.isAfter()) {  //To not over decrement
+                    runFadeOutAnimation();
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {     //Instantly after animation ends
-                        recyclerView.clearAnimation();
-                        showLoading();
-
-                        presenter.decrementDay();
-
-                        runFromLeftAnimation();
-
-                        if(presenter.isToday()) runHideFAB();
-                        else runShowFAB();
-
-                    }
-                },animationFadeOut.getDuration() + 50);
-
-
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {     //Instantly after animation ends
+                            System.out.println("VIEW : decDayButton.OnClick()");    //TODO
+                            presenter.decrementDay();
+                        }
+                    },animationFadeOut.getDuration() + 50);
+                }
             }
         });
 
@@ -192,12 +180,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                 new Handler().postDelayed(new Runnable() {  //TODO
                     @Override
                     public void run() {     //Instantly after animation ends
-                        recyclerView.clearAnimation();
-                        showLoading();
-
                         presenter.loadToday();
-
-                        runSlideDownAnimation();
                     }
                 },animationFadeOut.getDuration() + 50);
             }
@@ -221,10 +204,8 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
             public void run() {
                 for (Card card : cards) {
                     adapter.add(card);
+                    adapter.notifyDataSetChanged();
                 }
-
-                adapter.notifyDataSetChanged();
-                runSlideDownAnimation();
             }
         });
     }
@@ -243,8 +224,9 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     @Override
-    public void showCard(String eventID) {
+    public void showCard(String date, String eventID) {
         Intent intent = new Intent(this.getContext(), EventActivity.class);
+        intent.putExtra(EventActivity.EXTRA_EVENT_DATE, date);
         intent.putExtra(EventActivity.EXTRA_EVENT_ID, eventID);
         startActivity(intent);
     }
@@ -299,26 +281,32 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     private void runFadeOutAnimation() {
-        recyclerView.setLayoutAnimation(controllerFadeOut);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
-            public void onAnimationStart(Animation animation) {
-                incDayButton.setEnabled(false);
-                decDayButton.setEnabled(false);
-            }
+            public void run() {
+                recyclerView.setLayoutAnimation(controllerFadeOut);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                recyclerView.setLayoutAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        incDayButton.setEnabled(false);
+                        decDayButton.setEnabled(false);
+                    }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
 
-            }
+                    }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
 
+                    }
+                });
+                recyclerView.scheduleLayoutAnimation();
             }
         });
-        recyclerView.scheduleLayoutAnimation();
+
     }
 
     private void runSlideDownAnimation() {
@@ -397,13 +385,47 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     @Override
-    public void hideNoInternetConnection() {
-        this.connectionText.setVisibility(View.GONE);
+    public void hideMessenge() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                messengeText.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
     public void showNoInternetConnection() {
-        this.connectionText.setVisibility(View.VISIBLE);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                messengeText.setVisibility(View.VISIBLE);
+                String msg = getResources().getString(R.string.no_connection);
+                messengeText.setText(msg);
+
+                incDayButton.setEnabled(true);
+                decDayButton.setEnabled(true);
+            }
+        });
+    }
+
+    @Override
+    public void showNoData() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                messengeText.setVisibility(View.VISIBLE);
+                String msg = getResources().getString(R.string.no_data);
+                messengeText.setText(msg);
+
+                incDayButton.setEnabled(true);
+                decDayButton.setEnabled(true);
+            }
+        });
     }
 
     @Override
@@ -424,6 +446,42 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
             public void run() {
                 recyclerView.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void showIncDay() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                runFromRightAnimation();
+
+                if(presenter.isToday()) runHideFAB();
+                else runShowFAB();
+            }
+        });
+    }
+
+    @Override
+    public void showDecDay() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                runFromLeftAnimation();
+
+                if(presenter.isToday()) runHideFAB();
+                else runShowFAB();
+            }
+        });
+    }
+
+    @Override
+    public void showToday() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                runSlideDownAnimation();
             }
         });
     }

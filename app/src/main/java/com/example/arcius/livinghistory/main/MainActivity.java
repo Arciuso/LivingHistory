@@ -1,7 +1,9 @@
 package com.example.arcius.livinghistory.main;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.SymbolTable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -29,8 +31,7 @@ public class MainActivity extends DaggerAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_act);
-
-
+        
         MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (mainFragment == null) {
             mainFragment = fragment;
@@ -64,8 +65,17 @@ public class MainActivity extends DaggerAppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         if (preferences.getBoolean("firstrun", true)) {
-            Intent intent = new Intent(this, IntroActivity.class);
-            startActivity(intent);
+            saveYear();
+            preferences.edit().putBoolean("firstrun", false).apply();
         }
     }
+
+    private void saveYear() {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("war_year", 1939);
+        editor.putInt("start_year", new LocalDate().getYear());
+        editor.apply();
+    }
 }
+
