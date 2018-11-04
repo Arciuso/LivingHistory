@@ -1,6 +1,9 @@
 package com.example.arcius.livinghistory.event;
 
 
+import android.graphics.Bitmap;
+
+
 public interface EventContract {
 
     interface View {
@@ -13,9 +16,14 @@ public interface EventContract {
         void showText(String text);
         void showLocation(float latitude, float longitude);
         void showLocationText(String text);
+        void showImage(Bitmap bitmap);
+        void showImageTitle(String imageTitle);
+        void showImageSource(String imageSource);
     }
 
     interface Presenter {
         void start();
+        void takeView(EventContract.View view);
+        void dropView();
     }
 }

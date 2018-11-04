@@ -8,10 +8,13 @@ import android.util.JsonReader;
 
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.Location;
+import com.example.arcius.livinghistory.data.Picture;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -40,27 +43,24 @@ public class CardRepository implements DataInterface {
 
     private final static Map<String, List<Card>> cache = new LinkedHashMap<>();
 
-    private Context context;
+    private final Context context;  //TODO to saving images to internal storage !
 
     @Inject
-    CardRepository() {
-
+    CardRepository(Context context) {
+        this.context = context;
     }
 
-    /**
-     * Help : https://stackoverflow.com/questions/38372571/android-how-can-i-read-a-text-file-from-a-url
-     **/
 
     @Override
     public void getCards(final LoadCardListener listener, final String id) {
-        
+
         List<Card> cards;
 
         if (cache.containsKey(id)) {    //Load from cache
             cards = cache.get(id);
             listener.onLoaded(cards);
             for (Card card: cards) {
-                if(card.getType() == Card.CardTypes.Image && !card.isPictureReady()) {
+                if(card.getType() == Card.CardTypes.Image && !card.isPictureReady(context)) {
                     downloadImage(listener,card);
                 }
             }
@@ -84,12 +84,14 @@ public class CardRepository implements DataInterface {
 
                         cards = readJsonStream(in);
 
-                        cache.put(id, cards);
-                        listener.onLoaded(cards);
+                        if(!cards.isEmpty()) {
+                            cache.put(id, cards);
+                            listener.onLoaded(cards);
+                        }
 
-                        for (Card card: cards) {
-                            if(card.getType() == Card.CardTypes.Image && !card.isPictureReady()) {
-                                System.out.println("I found a Card Picture !");
+                       for (Card card: cards) {
+                            if(card.getType() == Card.CardTypes.Image && !card.isPictureReady(context)) {
+                                System.out.println("I found a Card-Picture !");
                                 downloadImage(listener,card);
                             }
                         }
@@ -113,10 +115,42 @@ public class CardRepository implements DataInterface {
             }).start();
         }
     }
-    
+
+    @Override
+    public Card getCard(String date, String eventID) {
+        List<Card> cards;
+
+        cards = cache.get(date);
+
+        for (Card card : cards) {
+            if(card.getEventID().equals(eventID)) {
+                return card;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Bitmap loadImage(String imageName) {
+        Bitmap bitmap = null;
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream    = this.context.openFileInput(imageName);
+            bitmap      = BitmapFactory.decodeStream(fileInputStream);
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
     private void downloadImage(final LoadCardListener listener, final Card card) {
+
+
         new Thread(new Runnable() {
 
+            String imageName;
             Bitmap image;
             HttpURLConnection connection;
 
@@ -130,19 +164,23 @@ public class CardRepository implements DataInterface {
 
                     System.out.println("Picture is downloading!");
                     BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-
+                    System.out.println("Picture Stream loaded !");
                     image = BitmapFactory.decodeStream(in);
                     if(image == null) System.out.println("Image is null");
+                    else System.out.println("Image is NOT null");
+
+                    imageName = card.getDate() + "-" + card.getEventID();
+
+                    saveImage(imageName, image);                    //Save bitmap as PNG ( internal storage )
 
                     List<Card> cards = cache.get(card.getDate());   //Find card in cache
                     int index = cards.indexOf(card);
-                    card.setImage(image);
                     cards.set(index, card);                         //Replace card in List
 
-                    cache.put(card.getDate(),cards);                //Save it to the cache with downloaded image
+                    cache.put(card.getDate(),cards);                //Save it to the cache
 
                     System.out.println("Picture has been downloaded !");
-                    listener.onLoaded(cache.get(card.getDate()));
+                    listener.onPicLoaded(cache.get(card.getDate()));
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -159,6 +197,18 @@ public class CardRepository implements DataInterface {
                 }
             }
         }).start();
+    }
+
+    private void saveImage(String imageName, Bitmap image) {
+        FileOutputStream fileOutputStream;
+        try {
+            fileOutputStream = this.context.openFileOutput(imageName, Context.MODE_PRIVATE);
+            image.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.close();
+            System.out.println("Picture has been saved !");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private List<Card> readJsonStream(BufferedReader in) throws IOException {
@@ -186,7 +236,7 @@ public class CardRepository implements DataInterface {
         String time = null;
         String mainTitle = null;
         String fullText = null;
-        String picture = null;
+        Picture picture = null;
         Location location = null;
         String date = null;
 
@@ -199,7 +249,6 @@ public class CardRepository implements DataInterface {
                     eventID = reader.nextString();
                     System.out.println("JSON READ : eventID = " + eventID);
                     break;
-
                 case "date":
                     date = reader.nextString();
                     break;
@@ -216,8 +265,7 @@ public class CardRepository implements DataInterface {
                     System.out.println("JSON READ : time = " + time);
                     break;
                 case "picture":
-                    picture = reader.nextString();
-                    System.out.println("JSON READ : picture = " + picture);
+                    picture = readPicture(reader);
                     break;
                 case "location":
                     location = readLocation(reader);
@@ -277,6 +325,41 @@ public class CardRepository implements DataInterface {
 
         return new Location(locationID, latitude, longitude, country, name);
     }
+
+    private Picture readPicture(JsonReader reader) throws IOException {
+        int pictureID = 0;
+        String link = null;
+        String source = null;
+        String title = null;
+
+        reader.beginArray();
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String token = reader.nextName();
+            switch (token) {
+                case "pictureID":
+                    pictureID = reader.nextInt();
+                    break;
+                case "link":
+                    link = reader.nextString();
+                    break;
+                case "source":
+                    source = reader.nextString();
+                    break;
+                case "title":
+                    title = reader.nextString();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
+        }
+        reader.endObject();
+        reader.endArray();
+
+        return new Picture(pictureID, link, source, title);
+    }
+
 
     private List<Double> readDoublesArray(JsonReader reader) throws IOException {   //Used for Map
         List<Double> doubles = new ArrayList<Double>();

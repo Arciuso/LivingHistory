@@ -35,6 +35,10 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class MainFragment extends DaggerFragment implements MainContract.View {
 
+    public enum AnimationType {
+        None, Inc, Dec, Today
+    }
+
     @Inject
     MainContract.Presenter presenter;
 
@@ -74,7 +78,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         super.onResume();
         this.presenter.takeView(this);
         this.presenter.start();
-        this.presenter.initData(); //TODO
+        this.presenter.initData(AnimationType.None); //TODO
     }
 
     @Override
@@ -125,51 +129,35 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         incDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               runFadeOutAnimation();
+                if(presenter.isBefore()) {  //To not over increment
+                    runFadeOutAnimation();
 
-                new Handler().postDelayed(new Runnable() {  //TODO
-                    @Override
-                    public void run() {     //Instantly after animation ends
-                        recyclerView.clearAnimation();
-                        recyclerView.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.VISIBLE);
-
-                        presenter.incrementDay();
-
-                        runFromRightAnimation();
-
-                        if(presenter.isToday()) runHideFAB();
-                        else runShowFAB();
-
-                    }
-                },animationFadeOut.getDuration() + 50);
-
-
+                    new Handler().postDelayed(new Runnable() {  //TODO
+                        @Override
+                        public void run() {     //Instantly after animation ends
+                            System.out.println("VIEW : incDayButton.OnClick()");    //TODO
+                            presenter.incrementDay();
+                        }
+                    },animationFadeOut.getDuration() + 50);
+                }
             }
         });
+
 
         decDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                runFadeOutAnimation();
+                if(presenter.isAfter()) {  //To not over decrement
+                    runFadeOutAnimation();
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {     //Instantly after animation ends
-                        recyclerView.clearAnimation();
-                        showLoading();
-
-                        presenter.decrementDay();
-
-                        runFromLeftAnimation();
-
-                        if(presenter.isToday()) runHideFAB();
-                        else runShowFAB();
-
-                    }
-                },animationFadeOut.getDuration() + 50);
-
-
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {     //Instantly after animation ends
+                            System.out.println("VIEW : decDayButton.OnClick()");    //TODO
+                            presenter.decrementDay();
+                        }
+                    },animationFadeOut.getDuration() + 50);
+                }
             }
         });
 
@@ -192,12 +180,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                 new Handler().postDelayed(new Runnable() {  //TODO
                     @Override
                     public void run() {     //Instantly after animation ends
-                        recyclerView.clearAnimation();
-                        showLoading();
-
                         presenter.loadToday();
-
-                        runSlideDownAnimation();
                     }
                 },animationFadeOut.getDuration() + 50);
             }
@@ -241,9 +224,10 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     @Override
-    public void showCard(Card card) {
+    public void showCard(String date, String eventID) {
         Intent intent = new Intent(this.getContext(), EventActivity.class);
-        intent.putExtra(EventActivity.EXTRA_EVENT_ID, card);
+        intent.putExtra(EventActivity.EXTRA_EVENT_DATE, date);
+        intent.putExtra(EventActivity.EXTRA_EVENT_ID, eventID);
         startActivity(intent);
     }
 
@@ -420,6 +404,9 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                 messengeText.setVisibility(View.VISIBLE);
                 String msg = getResources().getString(R.string.no_connection);
                 messengeText.setText(msg);
+
+                incDayButton.setEnabled(true);
+                decDayButton.setEnabled(true);
             }
         });
     }
@@ -434,6 +421,9 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
                 messengeText.setVisibility(View.VISIBLE);
                 String msg = getResources().getString(R.string.no_data);
                 messengeText.setText(msg);
+
+                incDayButton.setEnabled(true);
+                decDayButton.setEnabled(true);
             }
         });
     }
@@ -456,6 +446,42 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
             public void run() {
                 recyclerView.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void showIncDay() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                runFromRightAnimation();
+
+                if(presenter.isToday()) runHideFAB();
+                else runShowFAB();
+            }
+        });
+    }
+
+    @Override
+    public void showDecDay() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                runFromLeftAnimation();
+
+                if(presenter.isToday()) runHideFAB();
+                else runShowFAB();
+            }
+        });
+    }
+
+    @Override
+    public void showToday() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                runSlideDownAnimation();
             }
         });
     }

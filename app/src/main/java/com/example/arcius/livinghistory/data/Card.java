@@ -1,11 +1,11 @@
 package com.example.arcius.livinghistory.data;
 
 
-import android.graphics.Bitmap;
+import android.content.Context;
 
-import java.io.Serializable;
+import java.io.File;
 
-public class Card implements Serializable {
+public class Card {
 
     public CardTypes getType() {
         return type;
@@ -35,9 +35,8 @@ public class Card implements Serializable {
     private String mainTitle;
     private String fullText;
 
-    private String linkImage;
-    private boolean isPictureReady = false;
-    private Bitmap image;
+    private Picture picture = null;
+
 
     private Location location;
 
@@ -59,14 +58,14 @@ public class Card implements Serializable {
         this.location = location;
     }
 
-    public Card( String eventID, String date, String time, String mainTitle, String fullText, String linkImage, Location location ){
+    public Card( String eventID, String date, String time, String mainTitle, String fullText, Picture picture, Location location ){
         this.type = CardTypes.Image;
         this.eventID = eventID;
         this.date = date;
         this.time = time;
         this.mainTitle = mainTitle;
         this.fullText = fullText;
-        this.linkImage = linkImage;
+        this.picture = picture;
         this.location = location;
     }
 
@@ -103,7 +102,15 @@ public class Card implements Serializable {
     }
 
     public String getLinkImage() {
-        return linkImage;
+        return picture.getLink();
+    }
+
+    public String getSourceImage() {
+        return picture.getSource();
+    }
+
+    public String getTitleImage() {
+        return picture.getTitle();
     }
 
     public Location getLocation() {
@@ -114,17 +121,14 @@ public class Card implements Serializable {
         return date;
     }
 
-    public Bitmap getImage() {
-        return image;
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-        isPictureReady = true;
-    }
-
-
-    public boolean isPictureReady() {
-        return isPictureReady;
+    public boolean isPictureReady(Context context) {
+        File file = context.getFileStreamPath(getDate() + "-" + getEventID());
+        if(file == null || !file.exists()) {
+            System.out.println("Picture has NOT been found !");
+            return false;
+        } else {
+            System.out.println("Picture has been found !");
+            return true;
+        }
     }
 }

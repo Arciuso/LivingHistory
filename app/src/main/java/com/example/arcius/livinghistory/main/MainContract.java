@@ -1,6 +1,7 @@
 package com.example.arcius.livinghistory.main;
 
 import android.content.Context;
+import android.view.animation.Animation;
 
 import com.example.arcius.livinghistory.data.Card;
 
@@ -15,7 +16,7 @@ public interface MainContract {
             void addData(List<Card> cards);
             void updateData(List<Card> cards);
             void showSearch();
-            void showCard(Card card);
+            void showCard(String date, String eventID);
             void showDate(String date);
             void showYear(String year);
             void showDays(String days);
@@ -26,6 +27,9 @@ public interface MainContract {
             void showNoData();
             void showLoading();
             void hideLoading();
+            void showIncDay();
+            void showDecDay();
+            void showToday();
             Context getContext();
     }
 
@@ -33,7 +37,7 @@ public interface MainContract {
         void start();
         void takeView(MainContract.View view);
         void dropView();
-        void initData();
+        void initData(MainFragment.AnimationType animationType);
         void decrementDay();
         void incrementDay();
         void loadToday();
@@ -41,5 +45,7 @@ public interface MainContract {
         LocalDate getCurrentDate();
         void setCurrentDate(LocalDate date);
         boolean isToday();
+        boolean isAfter();
+        boolean isBefore();
     }
 }

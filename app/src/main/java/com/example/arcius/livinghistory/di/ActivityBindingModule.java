@@ -1,5 +1,7 @@
 package com.example.arcius.livinghistory.di;
 
+import com.example.arcius.livinghistory.event.EventActivity;
+import com.example.arcius.livinghistory.event.EventModule;
 import com.example.arcius.livinghistory.main.MainActivity;
 import com.example.arcius.livinghistory.main.MainModule;
 import com.example.arcius.livinghistory.search.SearchActivity;
@@ -19,5 +21,9 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = SearchModule.class)
     abstract SearchActivity searchActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = EventModule.class)
+    abstract EventActivity eventActivity();
 
 }

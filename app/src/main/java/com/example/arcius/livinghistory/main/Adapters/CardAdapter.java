@@ -1,6 +1,8 @@
 package com.example.arcius.livinghistory.main.Adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,7 @@ import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.main.MainContract;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,12 +69,16 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         ImageView image;
         ProgressBar progressBar;
+        TextView source;
+        TextView title;
 
         ViewHolderPic(View view) {
             super(view);
 
             this.image = view.findViewById(R.id.image);
             this.progressBar = view.findViewById(R.id.progressBar);
+            this.source = view.findViewById(R.id.imageSource);
+            this.title = view.findViewById(R.id.imageTitle);
         }
     }
 
@@ -136,7 +143,7 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 classicHolder.card.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        view.showCard(card);
+                        view.showCard(card.getDate(), card.getEventID());
                     }
                 });
 
@@ -149,23 +156,31 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case 1 :    //Image
                 final CardAdapter.ViewHolderPic picHolder = (CardAdapter.ViewHolderPic) holder;
 
-                picHolder.card.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        view.showCard(card);
-                    }
-                });
+                String imageName = card.getDate() + "-" + card.getEventID();
+
+                if(card.isPictureReady(context)) {
+                    picHolder.progressBar.setVisibility(View.GONE);
+                    picHolder.image.setVisibility(View.VISIBLE);
+                    picHolder.image.setImageBitmap(loadImage(imageName));
+
+                    picHolder.card.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {               //Open-able only if picture is already loaded
+                            view.showCard(card.getDate(), card.getEventID());
+                        }
+                    });
+
+                } else {
+                    picHolder.progressBar.setVisibility(View.VISIBLE);
+                    picHolder.image.setVisibility(View.GONE);
+                }
 
                 picHolder.time.setText(card.getTime());
                 picHolder.mainTitle.setText(card.getMainTitle());
                 picHolder.fullText.setText(card.getFullText());
                 picHolder.countryText.setText(card.getLocation().getCountry());
-                if(card.isPictureReady()) {
-                    picHolder.progressBar.setVisibility(View.GONE);
-                    picHolder.image.setImageBitmap(card.getImage());
-                } else {
-                    picHolder.progressBar.setVisibility(View.VISIBLE);
-                }
+                picHolder.title.setText(card.getTitleImage());
+                picHolder.source.setText(card.getSourceImage());
 
                 break;
             case 2 :    //Single
@@ -184,4 +199,18 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemCount() {
         return cards.size();
     }
+
+    private Bitmap loadImage(String imageName) {
+        Bitmap bitmap = null;
+        FileInputStream fileInputStream;
+        try {
+            fileInputStream = this.context.openFileInput(imageName);
+            bitmap = BitmapFactory.decodeStream(fileInputStream);
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
 }

@@ -1,6 +1,10 @@
 package com.example.arcius.livinghistory.event;
 
+import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
+
 import com.example.arcius.livinghistory.data.Card;
+import com.example.arcius.livinghistory.data.repository.CardRepository;
 
 import org.joda.time.LocalDate;
 
@@ -9,26 +13,44 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 
 public class EventPresenter implements EventContract.Presenter {
 
+    private final CardRepository repository;
+
+    @Nullable
     private EventContract.View view;
+
+    private String date;
+    private String eventID;
 
     private Card card;
 
-    EventPresenter(EventContract.View view, Card card) {
-        this.view = view;
-        this.view.setPresenter(this);
-        this.card = card;
+    @Inject
+    EventPresenter( @Named("Date") String date, @Named("EventID") String eventID, CardRepository repository) {
+        this.date = date;
+        this.eventID = eventID;
+        this.repository = repository;
+        this.card = repository.getCard(date,eventID);
     }
 
     @Override
     public void start() {
-        this.view.showCountry(card.getLocation().getCountry());
-        this.view.showText(card.getFullText());
-        this.view.showLocationText(card.getLocation().getName());
-        this.view.showTitle(card.getMainTitle());
-        setDate();
+        if(card.getType() == Card.CardTypes.Image) initPicture();
+        initTexts();
+    }
+
+    @Override
+    public void takeView(EventContract.View view) {
+        this.view = view;
+    }
+
+    @Override
+    public void dropView() {
+        this.view = null;
     }
 
     private void setDate() {
@@ -54,6 +76,25 @@ public class EventPresenter implements EventContract.Presenter {
 
         this.view.showDate(text);
         this.view.showYear(card.getDate().substring(0,4));
+    }
+
+    private void initPicture() {
+        String imageName = date + "-" + eventID;
+
+        Bitmap image = repository.loadImage(imageName);
+        if(view==null) System.out.println("View is null");
+        this.view.showImage(image);
+        this.view.showImageSource(card.getSourceImage());
+        this.view.showImageTitle(card.getTitleImage());
+    }
+
+    private void initTexts() {
+        this.view.showCountry(card.getLocation().getCountry());
+        this.view.showText(card.getFullText());
+        this.view.showLocationText(card.getLocation().getName());
+        this.view.showTitle(card.getMainTitle());
+
+        setDate();
     }
 
     private String getMonthForInt(int num) {

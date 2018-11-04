@@ -1,6 +1,7 @@
 package com.example.arcius.livinghistory.event;
 
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,14 +9,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
 
+import javax.inject.Inject;
 
-public class EventFragment extends Fragment implements EventContract.View {
+import dagger.android.support.DaggerFragment;
 
-    private EventContract.Presenter presenter;
+
+public class EventFragment extends DaggerFragment implements EventContract.View {
+
+    @Inject
+    EventContract.Presenter presenter;
 
     private TextView date;
     private TextView year;
@@ -25,8 +32,14 @@ public class EventFragment extends Fragment implements EventContract.View {
     private TextView time;
     private TextView country;
 
-    public static EventFragment newInstance() {
-        return new EventFragment();
+    private ImageView imageView;
+    private TextView imageTitle;
+    private TextView copyRightText;
+    private TextView imageSource;
+
+    @Inject
+    public EventFragment() {
+
     }
 
     @Override
@@ -37,6 +50,8 @@ public class EventFragment extends Fragment implements EventContract.View {
     @Override
     public void onResume() {
         super.onResume();
+        presenter.takeView(this);
+        presenter.start();
     }
 
     @Nullable
@@ -50,11 +65,20 @@ public class EventFragment extends Fragment implements EventContract.View {
         fullText = view.findViewById(R.id.fullText);
         titleText = view.findViewById(R.id.titleText);
         time = view.findViewById(R.id.time);
-        country = view.findViewById(R.id.CountryText);
+        country = view.findViewById(R.id.countryText);
 
-        this.presenter.start();
+        imageView = view.findViewById(R.id.image);
+        imageTitle = view.findViewById(R.id.imageTitle);
+        copyRightText = view.findViewById(R.id.textView);
+        imageSource = view.findViewById(R.id.imageSource);
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.dropView();
     }
 
     @Override
@@ -93,7 +117,26 @@ public class EventFragment extends Fragment implements EventContract.View {
     }
 
     @Override
+    public void showImageTitle(String imageTitle) {
+        this.imageTitle.setVisibility(View.VISIBLE);
+        this.imageTitle.setText(imageTitle);
+    }
+
+    @Override
+    public void showImageSource(String imageSource) {
+        this.copyRightText.setVisibility(View.VISIBLE);
+        this.imageSource.setVisibility(View.VISIBLE);
+        this.imageSource.setText(imageSource);
+    }
+
+    @Override
     public void showLocationText(String text) {
         this.locationTitle.setText(text);
+    }
+
+    @Override
+    public void showImage(Bitmap bitmap) {
+        this.imageView.setVisibility(View.VISIBLE);
+        this.imageView.setImageBitmap(bitmap);
     }
 }

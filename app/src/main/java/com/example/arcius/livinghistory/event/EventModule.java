@@ -4,12 +4,29 @@ import com.example.arcius.livinghistory.di.ActivityScoped;
 import com.example.arcius.livinghistory.di.FragmentScoped;
 
 
+import javax.inject.Named;
+
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 
 @Module
 public abstract class EventModule {
+
+    @Provides
+    @Named("Date")
+    @ActivityScoped
+    static String provideDate(EventActivity activity) {
+        return activity.getIntent().getStringExtra(EventActivity.EXTRA_EVENT_DATE);
+    }
+
+    @Provides
+    @Named("EventID")
+    @ActivityScoped
+    static String provideEventID(EventActivity activity) {
+        return activity.getIntent().getStringExtra(EventActivity.EXTRA_EVENT_ID);
+    }
 
     @FragmentScoped
     @ContributesAndroidInjector
