@@ -36,11 +36,10 @@ public class Card {
     private String fullText;
 
     private Picture picture = null;
-
-
     private Location location;
+    private Source source;
 
-    public Card( String eventID,String date, String time, String mainTitle, String fullText, Location location ){
+    public Card( String eventID,String date, String time, String mainTitle, String fullText, Location location, Source source ){
         this.type = CardTypes.Classic;
         this.eventID = eventID;
         this.date = date;
@@ -48,6 +47,7 @@ public class Card {
         this.mainTitle = mainTitle;
         this.fullText = fullText;
         this.location = location;
+        this.source = source;
     }
 
     public Card( String eventID, String time, String mainTitle, Location location){
@@ -58,7 +58,7 @@ public class Card {
         this.location = location;
     }
 
-    public Card( String eventID, String date, String time, String mainTitle, String fullText, Picture picture, Location location ){
+    public Card( String eventID, String date, String time, String mainTitle, String fullText, Picture picture, Location location, Source source ){
         this.type = CardTypes.Image;
         this.eventID = eventID;
         this.date = date;
@@ -67,6 +67,7 @@ public class Card {
         this.fullText = fullText;
         this.picture = picture;
         this.location = location;
+        this.source = source;
     }
 
     public String getTime() {
@@ -121,6 +122,13 @@ public class Card {
         return date;
     }
 
+    public String getSourceName(){
+        return this.source.getSourceName();
+    }
+
+    public String getSourceTitle(){
+        return this.source.getSourceTitle();
+    }
     public boolean isPictureReady(Context context) {
         File file = context.getFileStreamPath(getDate() + "-" + getEventID());
         if(file == null || !file.exists()) {

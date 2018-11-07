@@ -82,7 +82,6 @@ public class EventPresenter implements EventContract.Presenter {
         String imageName = date + "-" + eventID;
 
         Bitmap image = repository.loadImage(imageName);
-        if(view==null) System.out.println("View is null");
         this.view.showImage(image);
         this.view.showImageSource(card.getSourceImage());
         this.view.showImageTitle(card.getTitleImage());
@@ -93,6 +92,7 @@ public class EventPresenter implements EventContract.Presenter {
         this.view.showText(card.getFullText());
         this.view.showLocationText(card.getLocation().getName());
         this.view.showTitle(card.getMainTitle());
+        this.view.showSource(card.getSourceName(),card.getSourceTitle());
 
         setDate();
     }

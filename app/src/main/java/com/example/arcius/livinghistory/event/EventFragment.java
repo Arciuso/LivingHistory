@@ -32,6 +32,9 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
     private TextView time;
     private TextView country;
 
+    private TextView sourceName;
+    private TextView sourceTitle;
+
     private ImageView imageView;
     private TextView imageTitle;
     private TextView copyRightText;
@@ -67,10 +70,20 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
         time = view.findViewById(R.id.time);
         country = view.findViewById(R.id.countryText);
 
+        sourceName = view.findViewById(R.id.sourceName);
+        sourceTitle = view.findViewById(R.id.sourceTitle);
+
         imageView = view.findViewById(R.id.image);
         imageTitle = view.findViewById(R.id.imageTitle);
         copyRightText = view.findViewById(R.id.textView);
         imageSource = view.findViewById(R.id.imageSource);
+
+        sourceTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {   //TODO load URL
+
+            }
+        });
 
         return view;
     }
@@ -112,9 +125,17 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
     }
 
     @Override
+    public void showSource(String sourceName, String sourceTitle) {
+        String text = sourceName + " :";
+        this.sourceName.setText(text);
+        this.sourceTitle.setText(sourceTitle);
+    }
+
+    @Override
     public void showLocation(float latitude, float longitude) {
 
     }
+
 
     @Override
     public void showImageTitle(String imageTitle) {
