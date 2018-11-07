@@ -19,6 +19,7 @@ public interface EventContract {
         void showImage(Bitmap bitmap);
         void showImageTitle(String imageTitle);
         void showImageSource(String imageSource);
+        void showSource(String sourceName, String sourceLink, String sourceTitle);
     }
 
     interface Presenter {

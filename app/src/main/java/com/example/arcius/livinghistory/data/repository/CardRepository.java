@@ -9,6 +9,7 @@ import android.util.JsonReader;
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.Location;
 import com.example.arcius.livinghistory.data.Picture;
+import com.example.arcius.livinghistory.data.Source;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -237,6 +238,7 @@ public class CardRepository implements DataInterface {
         String mainTitle = null;
         String fullText = null;
         Picture picture = null;
+        Source source = null;
         Location location = null;
         String date = null;
 
@@ -267,6 +269,9 @@ public class CardRepository implements DataInterface {
                 case "picture":
                     picture = readPicture(reader);
                     break;
+                case "source":
+                    source = readSource(reader);
+                    break;
                 case "location":
                     location = readLocation(reader);
                     break;
@@ -280,9 +285,9 @@ public class CardRepository implements DataInterface {
         if(fullText == null)    //Simple
             return new Card(eventID, time, mainTitle, location);
         else if (picture == null)
-            return new Card(eventID, date, time, mainTitle, fullText, location);    //Without picture
+            return new Card(eventID, date, time, mainTitle, fullText, location, source);    //Without picture
         else
-            return new Card(eventID, date, time, mainTitle, fullText, picture, location);  //With picture
+            return new Card(eventID, date, time, mainTitle, fullText, picture, location, source);  //With picture
 
     }
 
@@ -324,6 +329,36 @@ public class CardRepository implements DataInterface {
         reader.endArray();
 
         return new Location(locationID, latitude, longitude, country, name);
+    }
+
+    private Source readSource(JsonReader reader) throws IOException {
+        String sourceName = null;
+        String sourceLink = null;
+        String sourceTitle = null;
+
+        reader.beginArray();
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String token = reader.nextName();
+            switch (token) {
+                case "link":
+                    sourceLink = reader.nextString();
+                    break;
+                case "name":
+                    sourceName = reader.nextString();
+                    break;
+                case "title":
+                    sourceTitle = reader.nextString();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
+        }
+        reader.endObject();
+        reader.endArray();
+
+        return new Source(sourceName, sourceLink, sourceTitle);
     }
 
     private Picture readPicture(JsonReader reader) throws IOException {

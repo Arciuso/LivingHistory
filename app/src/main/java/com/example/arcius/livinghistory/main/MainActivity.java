@@ -10,14 +10,20 @@ import android.os.Bundle;
 
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.intro.IntroActivity;
+import com.google.android.gms.security.ProviderInstaller;
 
 import org.joda.time.LocalDate;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity {
+public class MainActivity extends DaggerAppCompatActivity implements ProviderInstaller.ProviderInstallListener{
 
     public static final String CURRENT_DATE_KEY = "CURRENT_DATE_KEY";
 
@@ -31,7 +37,9 @@ public class MainActivity extends DaggerAppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_act);
-        
+
+        ProviderInstaller.installIfNeededAsync(this,this);
+
         MainFragment mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (mainFragment == null) {
             mainFragment = fragment;
@@ -68,6 +76,30 @@ public class MainActivity extends DaggerAppCompatActivity {
             saveYear();
             preferences.edit().putBoolean("firstrun", false).apply();
         }
+    }
+
+    @Override
+    public void onProviderInstalled() {
+        System.out.println("Provider Installed");
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("TLSv1.2");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        try {
+            assert sslContext != null;
+            sslContext.init(null, null, null);
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+        SSLEngine engine = sslContext.createSSLEngine();
+        engine.getEnabledProtocols();
+    }
+
+    @Override
+    public void onProviderInstallFailed(int i, Intent intent) {
+        System.out.println("Provider Installed Failed");
     }
 
     private void saveYear() {
