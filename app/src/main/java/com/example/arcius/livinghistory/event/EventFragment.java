@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,13 +81,6 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
         copyRightText = view.findViewById(R.id.textView);
         imageSource = view.findViewById(R.id.imageSource);
 
-        sourceTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {   //TODO load URL
-
-            }
-        });
-
         return view;
     }
 
@@ -125,10 +121,14 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
     }
 
     @Override
-    public void showSource(String sourceName, String sourceTitle) {
+    public void showSource(String sourceName, String sourceLink, String sourceTitle) {
         String text = sourceName + " :";
+        String link = "<a href='" + sourceLink + "'>" + sourceTitle + "</a>";
+
+        Spanned html = Html.fromHtml(link);
+        this.sourceTitle.setMovementMethod(LinkMovementMethod.getInstance());
+        this.sourceTitle.setText(html);
         this.sourceName.setText(text);
-        this.sourceTitle.setText(sourceTitle);
     }
 
     @Override

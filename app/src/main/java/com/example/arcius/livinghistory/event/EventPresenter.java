@@ -92,7 +92,7 @@ public class EventPresenter implements EventContract.Presenter {
         this.view.showText(card.getFullText());
         this.view.showLocationText(card.getLocation().getName());
         this.view.showTitle(card.getMainTitle());
-        this.view.showSource(card.getSourceName(),card.getSourceTitle());
+        this.view.showSource(card.getSourceName(), card.getSourceLink(), card.getSourceTitle());
 
         setDate();
     }

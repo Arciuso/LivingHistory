@@ -11,7 +11,7 @@ public class Card {
         return type;
     }
 
-    public enum CardTypes {     //TODO only with main title
+    public enum CardTypes {
         Classic(0), Image(1), Single(2);
 
         private final int value;
@@ -122,11 +122,15 @@ public class Card {
         return date;
     }
 
-    public String getSourceName(){
+    public String getSourceName() {
         return this.source.getSourceName();
     }
 
-    public String getSourceTitle(){
+    public String getSourceLink() {
+        return this.source.getSourceLink();
+    }
+
+    public String getSourceTitle() {
         return this.source.getSourceTitle();
     }
     public boolean isPictureReady(Context context) {
