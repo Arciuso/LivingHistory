@@ -5,6 +5,10 @@ import android.support.annotation.Nullable;
 
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.LocalDate;
 
@@ -51,6 +55,11 @@ public class EventPresenter implements EventContract.Presenter {
     @Override
     public void dropView() {
         this.view = null;
+    }
+
+    @Override
+    public LatLng getLatLng() {
+        return new LatLng(card.getLat(), card.getLng());
     }
 
     private void setDate() {

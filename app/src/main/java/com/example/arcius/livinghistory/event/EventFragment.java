@@ -16,13 +16,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
 
-public class EventFragment extends DaggerFragment implements EventContract.View {
+public class EventFragment extends DaggerFragment implements EventContract.View, OnMapReadyCallback {
+
+    public static final String MAP_VIEW_KEY = "MAP_KEY";
 
     @Inject
     EventContract.Presenter presenter;
@@ -43,6 +50,9 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
     private TextView copyRightText;
     private TextView imageSource;
 
+    private GoogleMap googleMap;
+    private MapView mapView;
+
     @Inject
     public EventFragment() {
 
@@ -56,9 +66,11 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
     @Override
     public void onResume() {
         super.onResume();
+        mapView.onResume();
         presenter.takeView(this);
         presenter.start();
     }
+
 
     @Nullable
     @Override
@@ -81,13 +93,60 @@ public class EventFragment extends DaggerFragment implements EventContract.View 
         copyRightText = view.findViewById(R.id.textView);
         imageSource = view.findViewById(R.id.imageSource);
 
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_KEY);
+        }
+
+        mapView = view.findViewById(R.id.mapView);
+        mapView.onCreate(mapViewBundle);
+        mapView.getMapAsync(this);
+
         return view;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mapView.onDestroy();
         presenter.dropView();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_KEY, mapViewBundle);
+        }
+
+        mapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        System.out.println("MAP READY");
+        this.googleMap = googleMap;
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(presenter.getLatLng()));
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.example.arcius.livinghistory.event;
 
 import android.graphics.Bitmap;
 
+import com.google.android.gms.maps.model.LatLng;
+
 
 public interface EventContract {
 
@@ -26,5 +28,6 @@ public interface EventContract {
         void start();
         void takeView(EventContract.View view);
         void dropView();
+        LatLng getLatLng();
     }
 }
