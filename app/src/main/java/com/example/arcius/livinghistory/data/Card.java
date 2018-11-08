@@ -133,6 +133,15 @@ public class Card {
     public String getSourceTitle() {
         return this.source.getSourceTitle();
     }
+
+    public float getLat() {
+        return location.getLatitude();
+    }
+
+    public float getLng() {
+        return location.getLongitude();
+    }
+
     public boolean isPictureReady(Context context) {
         File file = context.getFileStreamPath(getDate() + "-" + getEventID());
         if(file == null || !file.exists()) {

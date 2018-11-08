@@ -33,7 +33,7 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerFragment;
 
 @ActivityScoped
-public class MainFragment extends DaggerFragment implements MainContract.View {
+public class MainFragment extends DaggerFragment implements MainContract.View{
 
     public enum AnimationType {
         None, Inc, Dec, Today
