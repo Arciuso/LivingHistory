@@ -1,6 +1,8 @@
 package com.example.arcius.livinghistory.main;
 
 
+import android.util.Log;
+
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
 import com.example.arcius.livinghistory.data.repository.DataInterface;
@@ -80,7 +82,7 @@ public class MainPresenter implements MainContract.Presenter {
 
             @Override
             public void onLoaded(List<Card> cards) {
-                System.out.println("onLoaded " + getDateID());
+                Log.d("Initialize Data","Loaded : " + getDateID());
                 view.hideMessenge();
                 view.hideLoading();
                 view.updateData(cards);
@@ -101,7 +103,7 @@ public class MainPresenter implements MainContract.Presenter {
 
             @Override
             public void onPicLoaded(List<Card> cards) {
-                System.out.println("onPicLoaded " + getDateID());
+                Log.d("Initialize Data","Image Loaded : " + getDateID());
                 view.hideMessenge();
                 view.hideLoading();
                 view.updateData(cards);
@@ -109,14 +111,12 @@ public class MainPresenter implements MainContract.Presenter {
 
             @Override
             public void onNoConnection() {
-                System.out.println("onNoConnection " + getDateID());
                 view.showNoInternetConnection();
                 view.hideLoading();
             }
 
             @Override
             public void onNoData() {
-                System.out.println("onNoData " + getDateID());
                 view.hideLoading();
                 view.showNoData();
             }

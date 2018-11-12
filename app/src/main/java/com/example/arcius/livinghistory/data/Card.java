@@ -2,6 +2,7 @@ package com.example.arcius.livinghistory.data;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 
@@ -143,12 +144,14 @@ public class Card {
     }
 
     public boolean isPictureReady(Context context) {
-        File file = context.getFileStreamPath(getDate() + "-" + getEventID());
+        String fileName = getDate() + "-" + getEventID();
+        File file = context.getFileStreamPath(fileName);
+
         if(file == null || !file.exists()) {
-            System.out.println("Picture has NOT been found !");
+            Log.d("Card","Picture ( " + fileName +  " ) has not been found");
             return false;
         } else {
-            System.out.println("Picture has been found !");
+            Log.d("Card","Picture ( " + fileName +  " ) has been found");
             return true;
         }
     }

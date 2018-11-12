@@ -144,7 +144,6 @@ public class EventFragment extends DaggerFragment implements EventContract.View,
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        System.out.println("MAP READY");
         this.googleMap = googleMap;
         this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(presenter.getLatLng()));
     }

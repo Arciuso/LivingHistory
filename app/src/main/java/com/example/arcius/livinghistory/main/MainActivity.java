@@ -80,7 +80,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ProviderIns
 
     @Override
     public void onProviderInstalled() {
-        System.out.println("Provider Installed");
         SSLContext sslContext = null;
         try {
             sslContext = SSLContext.getInstance("TLSv1.2");
@@ -99,7 +98,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ProviderIns
 
     @Override
     public void onProviderInstallFailed(int i, Intent intent) {
-        System.out.println("Provider Installed Failed");
+
     }
 
     private void saveYear() {

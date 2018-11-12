@@ -135,7 +135,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
                     new Handler().postDelayed(new Runnable() {  //TODO
                         @Override
                         public void run() {     //Instantly after animation ends
-                            System.out.println("VIEW : incDayButton.OnClick()");    //TODO
                             presenter.incrementDay();
                         }
                     },animationFadeOut.getDuration() + 50);
@@ -153,7 +152,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {     //Instantly after animation ends
-                            System.out.println("VIEW : decDayButton.OnClick()");    //TODO
                             presenter.decrementDay();
                         }
                     },animationFadeOut.getDuration() + 50);
