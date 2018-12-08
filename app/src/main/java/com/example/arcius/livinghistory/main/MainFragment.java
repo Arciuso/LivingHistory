@@ -1,6 +1,7 @@
 package com.example.arcius.livinghistory.main;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -35,38 +37,31 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class MainFragment extends DaggerFragment implements MainContract.View{
 
-    public enum AnimationType {
-        None, Inc, Dec, Today
-    }
-
     @Inject
     MainContract.Presenter presenter;
-
     private CardAdapter adapter;
-
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-
     private Animation animationFadeOut;
     private Animation animationFadeIn;
-
     private LayoutAnimationController controllerFadeOut;
     private LayoutAnimationController controllerFromRight;
     private LayoutAnimationController controllerFromLeft;
     private LayoutAnimationController controllerSlideDown;
-
     private ImageButton incDayButton;
     private ImageButton decDayButton;
-
     private FloatingActionButton tofirstFab;
-
+    private FloatingActionButton searchFab;
     private TextView date;
     private TextView daysText;
     private TextView year;
     private TextView days;
-
     private TextView messengeText;
+
+    public enum AnimationType {
+        None, Inc, Dec, Today
+    }
 
     @Inject
     public MainFragment() {
@@ -78,7 +73,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         super.onResume();
         this.presenter.takeView(this);
         this.presenter.start();
-        this.presenter.initData(AnimationType.None); //TODO
+        this.presenter.initData(AnimationType.None);
     }
 
     @Override
@@ -87,6 +82,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         this.presenter.dropView();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
@@ -130,12 +126,15 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             @Override
             public void onClick(View v) {
                 if(presenter.isBefore()) {  //To not over increment
-                    runFadeOutAnimation();
+                    if(adapter.getItemCount() > 0)  //If there is no events, do not animate
+                        runFadeOutAnimation();
 
                     new Handler().postDelayed(new Runnable() {  //TODO
                         @Override
                         public void run() {     //Instantly after animation ends
                             presenter.incrementDay();
+
+                            runShowFABS();
                         }
                     },animationFadeOut.getDuration() + 50);
                 }
@@ -147,19 +146,22 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             @Override
             public void onClick(View v) {
                 if(presenter.isAfter()) {  //To not over decrement
-                    runFadeOutAnimation();
+                    if(adapter.getItemCount() > 0)  //If there is no events, do not animate
+                        runFadeOutAnimation();
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {     //Instantly after animation ends
                             presenter.decrementDay();
+
+                            runShowFABS();
                         }
                     },animationFadeOut.getDuration() + 50);
                 }
             }
         });
 
-        FloatingActionButton searchFab = view.findViewById(R.id.searchFab);
+        searchFab = view.findViewById(R.id.searchFab);
         tofirstFab = view.findViewById(R.id.toFirstFab);
 
         searchFab.setOnClickListener(new View.OnClickListener() {
@@ -173,7 +175,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             @Override
             public void onClick(View v) {
                 runFadeOutAnimation();
-                runHideFAB();
+                runShowFABS();
 
                 new Handler().postDelayed(new Runnable() {  //TODO
                     @Override
@@ -184,6 +186,15 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             }
         });
 
+        waitToHideFABs();
+
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                runShowFABS();
+                return false;
+            }
+        });
 
         return view;
     }
@@ -302,6 +313,13 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
                     }
                 });
                 recyclerView.scheduleLayoutAnimation();
+
+                new Handler().postDelayed(new Runnable() {  //Because of flash of the screen at the end of the animation
+                    @Override
+                    public void run() {
+                        recyclerView.setVisibility(View.GONE);  //Hide instantly after the animation
+                    }
+                },animationFadeOut.getDuration());
             }
         });
 
@@ -329,33 +347,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             }
         });
         recyclerView.scheduleLayoutAnimation();
-    }
-
-    private void runShowFAB() {
-        if(tofirstFab.getVisibility() == View.GONE ) {  //To not run animation twice
-            tofirstFab.setVisibility(View.VISIBLE);
-            tofirstFab.startAnimation(animationFadeIn);
-        }
-    }
-
-    private void runHideFAB() {
-        animationFadeOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                tofirstFab.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        tofirstFab.startAnimation(animationFadeOut);
     }
 
     private void runFromLeftAnimation() {
@@ -454,9 +445,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             @Override
             public void run() {
                 runFromRightAnimation();
-
-                if(presenter.isToday()) runHideFAB();
-                else runShowFAB();
             }
         });
     }
@@ -467,9 +455,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             @Override
             public void run() {
                 runFromLeftAnimation();
-
-                if(presenter.isToday()) runHideFAB();
-                else runShowFAB();
             }
         });
     }
@@ -482,5 +467,66 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
                 runSlideDownAnimation();
             }
         });
+    }
+
+    private void runHideFABS() {    //Run fadeout animation for both FABs, handles visibility of ToFirst FAB
+        final Animation animation = animationFadeOut;
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                searchFab.setVisibility(View.GONE);
+                tofirstFab.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        searchFab.startAnimation(animation);
+        if(tofirstFab.getVisibility() != View.GONE)     //Do not animate on today
+        tofirstFab.startAnimation(animation);
+    }
+
+    private void runShowFABS() {    //Run fadein animation for both FABs, at the end run waitToHideFABs()
+        if(searchFab.getVisibility() == View.GONE ) {  //To not run animation twice
+            searchFab.setVisibility(View.VISIBLE);
+            if(!presenter.isToday())
+                tofirstFab.setVisibility(View.VISIBLE);
+            Animation animation = animationFadeIn;
+            animation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    waitToHideFABs();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+            searchFab.startAnimation(animation);
+            if(!presenter.isToday())
+                tofirstFab.startAnimation(animation);
+        }
+    }
+
+    private void waitToHideFABs() {     //Wait 1500 milisec to hide FABs
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runHideFABS();
+            }
+        },1000);
     }
 }

@@ -1,4 +1,4 @@
 package com.example.arcius.livinghistory.data.repository;
 
-public class JsonReader {
+public class JsonReader {   //TODO
 }

@@ -45,7 +45,7 @@ public class CardRepository implements DataInterface {
 
     private final static Map<String, List<Card>> cache = new LinkedHashMap<>();
 
-    private final Context context;  //TODO to saving images to internal storage !
+    private final Context context;
 
     @Inject
     CardRepository(Context context) {
@@ -71,7 +71,7 @@ public class CardRepository implements DataInterface {
             new Thread(new Runnable() {
 
                 List<Card> cards;
-                HttpURLConnection connection;
+                HttpURLConnection connection; 
 
                 @Override
                 public void run() {
@@ -111,6 +111,7 @@ public class CardRepository implements DataInterface {
                         Log.d("Get Cards","Unknown error", e);
                         e.printStackTrace();
                     } finally {
+                        Log.d("Get Cards","Disconnected !!!");
                         connection.disconnect();
                     }
                 }
@@ -138,8 +139,8 @@ public class CardRepository implements DataInterface {
         Bitmap bitmap = null;
         FileInputStream fileInputStream;
         try {
-            fileInputStream    = this.context.openFileInput(imageName);
-            bitmap      = BitmapFactory.decodeStream(fileInputStream);
+            fileInputStream = this.context.openFileInput(imageName);
+            bitmap = BitmapFactory.decodeStream(fileInputStream);
             fileInputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,13 +187,11 @@ public class CardRepository implements DataInterface {
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (EOFException e) {          //No Data
-                    Log.d("Download Image","There is no data", e);
-                    e.printStackTrace();
+                    Log.e("Download Image","There is no data", e);
                 } catch (UnknownHostException e) {  //No connection
-                    Log.d("Download Image","No internet connection", e);
-                    e.printStackTrace();
+                    Log.e("Download Image","No internet connection", e);
                 } catch (IOException e) {
-                    Log.d("Download Image","Unknown error", e);
+                    Log.e("Download Image","Unknown error", e);
                 } finally {
                     connection.disconnect();
                 }
@@ -208,8 +207,7 @@ public class CardRepository implements DataInterface {
             fileOutputStream.close();
             Log.d("Save Image","Image saved");
         } catch (Exception e) {
-            Log.d("Save Iamge","Image not saved",e);
-            e.printStackTrace();
+            Log.e("Save Iamge","Image not saved",e);
         }
     }
 
