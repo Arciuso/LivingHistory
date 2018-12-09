@@ -2,6 +2,7 @@ package com.example.arcius.livinghistory.event;
 
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
@@ -64,8 +65,10 @@ public class EventPresenter implements EventContract.Presenter {
 
     private void setDate() {
         int year = Integer.parseInt(card.getDate().substring(0,4));
-        int month =  Integer.parseInt(card.getDate().substring(5,6));
-        int day = Integer.parseInt(card.getDate().substring(7,8));
+        int month =  Integer.parseInt(card.getDate().substring(4,6));
+        int day = Integer.parseInt(card.getDate().substring(6,8));
+
+        Log.d("DATE","ID : " + card.getDate() + " Year : " + card.getDate().substring(0,4) + " Month : " + card.getDate().substring(5,6) + " Day : " + card.getDate().substring(6,8));
 
         LocalDate date = new LocalDate(year,month,day);
 

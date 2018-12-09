@@ -4,4 +4,6 @@
 
     <string name="no_connection">No internet connection</string>
     <string name="no_data">No data has been found for this day</string>
+
+    <string name="facebook_app_id">313108642627564</string>
 </resources>
