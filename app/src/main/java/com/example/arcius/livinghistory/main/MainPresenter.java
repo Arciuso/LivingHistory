@@ -154,7 +154,7 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void decrementDay() {    //TODO
+    public void decrementDay() {    //TODO on the edge decrement year
 
             myDate = myDate.minusDays(1);
 
@@ -169,7 +169,7 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void incrementDay() {    //TODO
+    public void incrementDay() {    //TODO on the edge increment year
 
             myDate = myDate.plusDays(1);
 
@@ -211,13 +211,13 @@ public class MainPresenter implements MainContract.Presenter {
 
     private void setText() {
         if (interval.contains(myDate.toDateTimeAtStartOfDay())) { //During War
-            view.showYear(Integer.toString(year));
+            view.showYear(Integer.toString(myDate.getYear()));
             setDaysDuring();
         } else if (myDate.compareTo(startDate) < 0) {           //Before War
-            view.showYear(Integer.toString(year));
+            view.showYear(Integer.toString(myDate.getYear()));
             setDaysBefore();
         } else {                                                //After War
-            view.showYear(Integer.toString(year));
+            view.showYear(Integer.toString(myDate.getYear()));
             setDaysAfter();
         }
 

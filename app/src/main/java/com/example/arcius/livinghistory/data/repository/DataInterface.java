@@ -17,7 +17,7 @@ public interface DataInterface {
     }
 
     void getCards(LoadCardListener listener, String id);
-    Card getCard(String date, String eventID);
+    Card getCard(int eventID);
     Bitmap loadImage(String imageName);
 
 }

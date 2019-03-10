@@ -30,16 +30,17 @@ public class EventPresenter implements EventContract.Presenter {
     private EventContract.View view;
 
     private String date;
-    private String eventID;
+    private int eventID;
 
     private Card card;
 
     @Inject
-    EventPresenter( @Named("Date") String date, @Named("EventID") String eventID, CardRepository repository) {
+    EventPresenter( @Named("Date") String date, @Named("EventID") int eventID, CardRepository repository) {
         this.date = date;
+        Log.d("EventPresenter","EventPresenter set with eventID : " + eventID);
         this.eventID = eventID;
         this.repository = repository;
-        this.card = repository.getCard(date,eventID);
+        this.card = repository.getCard(eventID);
     }
 
     @Override
@@ -100,9 +101,9 @@ public class EventPresenter implements EventContract.Presenter {
     }
 
     private void initTexts() {
-        this.view.showCountry(card.getLocation().getCountry());
+        this.view.showCountry(card.getCountry());
         this.view.showText(card.getFullText());
-        this.view.showLocationText(card.getLocation().getName());
+        this.view.showLocationText(card.getLocationName());
         this.view.showTitle(card.getMainTitle());
         this.view.showSource(card.getSourceName(), card.getSourceLink(), card.getSourceTitle());
 

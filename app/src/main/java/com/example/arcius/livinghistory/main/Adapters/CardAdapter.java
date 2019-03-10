@@ -53,7 +53,6 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     class ViewHolderClassic extends ViewHolderSingle {
 
-
         TextView fullText;
 
 
@@ -150,7 +149,7 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 classicHolder.time.setText(card.getTime());
                 classicHolder.mainTitle.setText(card.getMainTitle());
                 classicHolder.fullText.setText(card.getFullText());
-                classicHolder.countryText.setText(card.getLocation().getCountry());
+                classicHolder.countryText.setText(card.getCountry());
 
                 break;
             case 1 :    //Image
@@ -178,7 +177,7 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 picHolder.time.setText(card.getTime());
                 picHolder.mainTitle.setText(card.getMainTitle());
                 picHolder.fullText.setText(card.getFullText());
-                picHolder.countryText.setText(card.getLocation().getCountry());
+                picHolder.countryText.setText(card.getCountry());
                 picHolder.title.setText(card.getTitleImage());
                 picHolder.source.setText(card.getSourceImage());
 
@@ -188,7 +187,7 @@ public class CardAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                 singleHolder.time.setText(card.getTime());
                 singleHolder.mainTitle.setText(card.getMainTitle());
-                singleHolder.countryText.setText(card.getLocation().getCountry());
+                singleHolder.countryText.setText(card.getCountry());
 
                 break;
 

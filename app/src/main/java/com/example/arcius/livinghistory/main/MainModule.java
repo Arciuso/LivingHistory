@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import com.example.arcius.livinghistory.di.ActivityScoped;
 import com.example.arcius.livinghistory.di.FragmentScoped;
-import com.example.arcius.livinghistory.main.Adapters.CardAdapter;
 
 import org.joda.time.LocalDate;
 

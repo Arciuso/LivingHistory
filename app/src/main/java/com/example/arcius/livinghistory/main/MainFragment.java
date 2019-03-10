@@ -107,7 +107,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
             @Override
             public void onRefresh() {
                 presenter.refreshCards();
-                swipeRefreshLayout.setRefreshing(false);
+                swipeRefreshLayout.setRefreshing(false);    //TODO
             }
         });
 
@@ -125,8 +125,8 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         incDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(presenter.isBefore()) {  //To not over increment
-                    if(adapter.getItemCount() > 0)  //If there is no events, do not animate
+                if(presenter.isBefore()) {              //To not over increment
+                    if(adapter.getItemCount() > 0)      //If there is no events, do not animate
                         runFadeOutAnimation();
 
                     new Handler().postDelayed(new Runnable() {  //TODO
@@ -145,13 +145,13 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         decDayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(presenter.isAfter()) {  //To not over decrement
-                    if(adapter.getItemCount() > 0)  //If there is no events, do not animate
+                if(presenter.isAfter()) {               //To not over decrement
+                    if(adapter.getItemCount() > 0)      //If there is no events, do not animate
                         runFadeOutAnimation();
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
-                        public void run() {     //Instantly after animation ends
+                        public void run() {    //Instantly after animation ends
                             presenter.decrementDay();
 
                             runShowFABS();
@@ -179,7 +179,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
 
                 new Handler().postDelayed(new Runnable() {  //TODO
                     @Override
-                    public void run() {     //Instantly after animation ends
+                    public void run() {         //Instantly after animation ends
                         presenter.loadToday();
                     }
                 },animationFadeOut.getDuration() + 50);
@@ -233,7 +233,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
     }
 
     @Override
-    public void showCard(String date, String eventID) {
+    public void showCard(String date, int eventID) {
         Intent intent = new Intent(this.getContext(), EventActivity.class);
         intent.putExtra(EventActivity.EXTRA_EVENT_DATE, date);
         intent.putExtra(EventActivity.EXTRA_EVENT_ID, eventID);
@@ -260,6 +260,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         this.daysText.setText(text);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void hideTodayFAB() {
         this.tofirstFab.setVisibility(View.GONE);
@@ -477,6 +478,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
 
             }
 
+            @SuppressLint("RestrictedApi")
             @Override
             public void onAnimationEnd(Animation animation) {
                 searchFab.setVisibility(View.GONE);
@@ -490,11 +492,12 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         });
         searchFab.startAnimation(animation);
         if(tofirstFab.getVisibility() != View.GONE)     //Do not animate on today
-        tofirstFab.startAnimation(animation);
+            tofirstFab.startAnimation(animation);
     }
 
-    private void runShowFABS() {    //Run fadein animation for both FABs, at the end run waitToHideFABs()
-        if(searchFab.getVisibility() == View.GONE ) {  //To not run animation twice
+    @SuppressLint("RestrictedApi")
+    private void runShowFABS() {                        //Run fadein animation for both FABs, at the end run waitToHideFABs()
+        if(searchFab.getVisibility() == View.GONE ) {   //To not run animation twice
             searchFab.setVisibility(View.VISIBLE);
             if(!presenter.isToday())
                 tofirstFab.setVisibility(View.VISIBLE);
@@ -521,7 +524,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
         }
     }
 
-    private void waitToHideFABs() {     //Wait 1500 milisec to hide FABs
+    private void waitToHideFABs() {                 //Wait 1500 milisec to hide FABs
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

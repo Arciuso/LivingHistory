@@ -24,8 +24,8 @@ public abstract class EventModule {
     @Provides
     @Named("EventID")
     @ActivityScoped
-    static String provideEventID(EventActivity activity) {
-        return activity.getIntent().getStringExtra(EventActivity.EXTRA_EVENT_ID);
+    static int provideEventID(EventActivity activity) {
+        return activity.getIntent().getIntExtra(EventActivity.EXTRA_EVENT_ID, 0);
     }
 
     @FragmentScoped
