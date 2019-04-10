@@ -12,7 +12,7 @@ public interface SearchContract {
     }
 
     interface Presenter {
-        void start();
+        void initialize();
         void takeView(SearchContract.View view);
         void dropView();
         LocalDate getCurrentDate();

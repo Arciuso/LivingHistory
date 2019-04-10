@@ -1,5 +1,13 @@
 package com.example.arcius.livinghistory.data;
 
+/*
+<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
+
+<provider android:authorities="com.facebook.app.FacebookContentProvider313108642627564"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+ */
 
 import android.content.Context;
 import android.util.Log;

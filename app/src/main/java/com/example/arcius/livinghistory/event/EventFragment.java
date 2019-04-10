@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -20,7 +19,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 
 import javax.inject.Inject;
 
@@ -68,7 +66,7 @@ public class EventFragment extends DaggerFragment implements EventContract.View,
         super.onResume();
         mapView.onResume();
         presenter.takeView(this);
-        presenter.start();
+        presenter.initialize();
     }
 
 
@@ -145,6 +143,7 @@ public class EventFragment extends DaggerFragment implements EventContract.View,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+
         this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(presenter.getLatLng()));
     }
 

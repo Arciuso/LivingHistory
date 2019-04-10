@@ -44,7 +44,7 @@ public class EventPresenter implements EventContract.Presenter {
     }
 
     @Override
-    public void start() {
+    public void initialize() {
         if(card.getType() == Card.CardTypes.Image) initPicture();
         initTexts();
     }
@@ -61,6 +61,7 @@ public class EventPresenter implements EventContract.Presenter {
 
     @Override
     public LatLng getLatLng() {
+        Log.d("MAP", "LAT : " + card.getLat() + " LNG : " + card.getLng());
         return new LatLng(card.getLat(), card.getLng());
     }
 

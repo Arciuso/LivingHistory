@@ -51,7 +51,7 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void start() {
+    public void initialize() {
         this.myDate = myDate.withYear(this.year);
 
         if(isToday()) view.hideTodayFAB();
@@ -134,7 +134,7 @@ public class MainPresenter implements MainContract.Presenter {
         } else {
             int difference = myDate.getYear() - this.startYear;
 
-            if (this.warYear + difference > 1945) {  //Over the 1945, start over again
+            if (this.warYear + difference > 1945) {  //Over the 1945, initialize over again
                 myDate = myDate.withYear(this.warYear);
             } else {                                //Is in range of 1939 and 1945
                 this.year = this.year + difference;
@@ -233,7 +233,7 @@ public class MainPresenter implements MainContract.Presenter {
     private void setDaysBefore() {
         int days = Days.daysBetween(myDate.toDateTimeAtStartOfDay(), startDate.toDateTimeAtStartOfDay()).getDays();
         view.showDays(Integer.toString(days));
-        view.showDaysText("days to start of war");
+        view.showDaysText("days to initialize of war");
     }
 
     private void setDaysDuring() {

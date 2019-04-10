@@ -25,7 +25,7 @@ public interface EventContract {
     }
 
     interface Presenter {
-        void start();
+        void initialize();
         void takeView(EventContract.View view);
         void dropView();
         LatLng getLatLng();

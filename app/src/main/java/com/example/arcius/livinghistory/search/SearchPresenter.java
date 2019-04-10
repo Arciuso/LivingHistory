@@ -33,7 +33,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     }
 
     @Override
-    public void start() {
+    public void initialize() {
         setCalendar();
         setText();
     }
@@ -83,7 +83,7 @@ public class SearchPresenter implements SearchContract.Presenter {
     private void setDaysBefore() {
         int days = Days.daysBetween(today.toDateTimeAtStartOfDay(), startDate.toDateTimeAtStartOfDay()).getDays();
         view.showDays(Integer.toString(days));
-        view.showDaysText("days to start of war");
+        view.showDaysText("days to initialize of war");
     }
 
     private void setDaysDuring() {

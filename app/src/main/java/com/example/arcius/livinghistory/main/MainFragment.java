@@ -72,7 +72,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View{
     public void onResume() {
         super.onResume();
         this.presenter.takeView(this);
-        this.presenter.start();
+        this.presenter.initialize();
         this.presenter.initData(AnimationType.None);
     }
 

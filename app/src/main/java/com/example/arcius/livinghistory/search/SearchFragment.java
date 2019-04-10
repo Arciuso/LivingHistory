@@ -39,7 +39,7 @@ public class SearchFragment extends DaggerFragment implements SearchContract.Vie
     public void onResume() {
         super.onResume();
         this.presenter.takeView(this);
-        this.presenter.start();
+        this.presenter.initialize();
     }
 
     @Override

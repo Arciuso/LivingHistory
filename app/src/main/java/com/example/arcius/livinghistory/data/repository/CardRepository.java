@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -74,10 +75,19 @@ public class CardRepository implements DataInterface {
                 public void run() {
                     listener.onLoading();
 
+                    Log.d("Get Cards", "ZIVOOOOOT");
+
                     try {
                         URL url = new URL(link + getDateScript + date);
 
                         connection = (HttpURLConnection) url.openConnection();
+
+                        connection.setConnectTimeout(3000);
+                        connection.setReadTimeout(3000);
+
+                        int respCode = connection.getResponseCode();
+
+                        Log.d("Get Cards", "Connection response code : " + respCode);
 
                         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
@@ -100,7 +110,7 @@ public class CardRepository implements DataInterface {
                         Log.d("Get Cards", "There is no data", e);
                         e.printStackTrace();
                         listener.onNoData();
-                    } catch (UnknownHostException e) {  //No connection
+                    } catch (UnknownHostException | SocketTimeoutException e) {  //No connection
                         Log.d("Get Cards", "No internet connection", e);
                         e.printStackTrace();
                         listener.onNoConnection();

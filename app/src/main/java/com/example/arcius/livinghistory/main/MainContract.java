@@ -34,7 +34,7 @@ public interface MainContract {
     }
 
     interface Presenter {
-        void start();
+        void initialize();
         void takeView(MainContract.View view);
         void dropView();
         void initData(MainFragment.AnimationType animationType);

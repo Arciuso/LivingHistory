@@ -76,7 +76,7 @@ public class IntroPresenter implements IntroContract.Presenter.Settings {
     private void setDaysBefore() {
         int days = Days.daysBetween(myDate.toDateTimeAtStartOfDay(),startDate.toDateTimeAtStartOfDay()).getDays();
         view.showDays(Integer.toString(days));
-        view.showDaysText("days to start of war");
+        view.showDaysText("days to initialize of war");
     }
 
     private void setDaysDuring() {

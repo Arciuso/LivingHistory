@@ -20,3 +20,4 @@ public abstract class LocalDatabase extends RoomDatabase {
     public abstract LocationDao locationDao();
     public abstract PictureDao pictureDao();
 }
+
