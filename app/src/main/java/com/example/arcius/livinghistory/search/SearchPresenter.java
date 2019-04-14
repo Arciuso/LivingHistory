@@ -2,7 +2,7 @@ package com.example.arcius.livinghistory.search;
 
 import android.support.annotation.Nullable;
 
-import com.example.arcius.livinghistory.di.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
 
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -11,7 +11,6 @@ import org.joda.time.LocalDate;
 import java.util.Calendar;
 
 import javax.inject.Inject;
-
 
 @ActivityScoped
 public class SearchPresenter implements SearchContract.Presenter {

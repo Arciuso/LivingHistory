@@ -1,4 +1,4 @@
-package com.example.arcius.livinghistory.di;
+package com.example.arcius.livinghistory.dependencyInjection;
 
 import android.app.Application;
 import android.content.Context;

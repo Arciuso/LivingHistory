@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
 import com.example.arcius.livinghistory.data.Card;
-import com.example.arcius.livinghistory.di.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
 import com.example.arcius.livinghistory.event.EventActivity;
 import com.example.arcius.livinghistory.main.Adapters.CardAdapter;
 import com.example.arcius.livinghistory.search.SearchActivity;

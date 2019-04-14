@@ -1,4 +1,4 @@
-package com.example.arcius.livinghistory.di;
+package com.example.arcius.livinghistory.dependencyInjection;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

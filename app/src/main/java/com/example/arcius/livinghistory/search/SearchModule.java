@@ -1,7 +1,7 @@
 package com.example.arcius.livinghistory.search;
 
-import com.example.arcius.livinghistory.di.ActivityScoped;
-import com.example.arcius.livinghistory.di.FragmentScoped;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.FragmentScoped;
 
 
 import org.joda.time.LocalDate;

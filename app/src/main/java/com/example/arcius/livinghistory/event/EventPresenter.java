@@ -6,9 +6,7 @@ import android.util.Log;
 
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.LocalDate;
@@ -21,7 +19,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-
+@ActivityScoped
 public class EventPresenter implements EventContract.Presenter {
 
     private final CardRepository repository;

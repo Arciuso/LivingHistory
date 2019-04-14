@@ -1,8 +1,8 @@
 package com.example.arcius.livinghistory.event;
 
-import com.example.arcius.livinghistory.di.ActivityScoped;
-import com.example.arcius.livinghistory.di.FragmentScoped;
 
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.FragmentScoped;
 
 import javax.inject.Named;
 

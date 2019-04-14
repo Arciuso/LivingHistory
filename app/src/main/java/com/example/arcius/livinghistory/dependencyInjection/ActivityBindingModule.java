@@ -1,4 +1,4 @@
-package com.example.arcius.livinghistory.di;
+package com.example.arcius.livinghistory.dependencyInjection;
 
 import com.example.arcius.livinghistory.event.EventActivity;
 import com.example.arcius.livinghistory.event.EventModule;

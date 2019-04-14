@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,7 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
-import com.example.arcius.livinghistory.di.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
 import com.example.arcius.livinghistory.main.MainActivity;
 
 import javax.inject.Inject;
@@ -94,6 +95,7 @@ public class SearchFragment extends DaggerFragment implements SearchContract.Vie
 
     @Override
     public void showDay() {
+        Log.d("CURRENT_DAY", "CURRENT_DAY : " + presenter.getCurrentDate());
         Intent intent = new Intent(this.getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_DATE_KEY, presenter.getCurrentDate());
         startActivity(intent);

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.arcius.livinghistory.R;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -24,7 +25,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
-
+@ActivityScoped
 public class EventFragment extends DaggerFragment implements EventContract.View, OnMapReadyCallback {
 
     public static final String MAP_VIEW_KEY = "MAP_KEY";

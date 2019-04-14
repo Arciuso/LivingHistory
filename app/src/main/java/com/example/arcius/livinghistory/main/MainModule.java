@@ -3,8 +3,8 @@ package com.example.arcius.livinghistory.main;
 import android.app.Activity;
 import android.content.SharedPreferences;
 
-import com.example.arcius.livinghistory.di.ActivityScoped;
-import com.example.arcius.livinghistory.di.FragmentScoped;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.FragmentScoped;
 
 import org.joda.time.LocalDate;
 
@@ -20,10 +20,11 @@ public abstract class MainModule {
 
     @FragmentScoped
     @ContributesAndroidInjector
-    abstract MainFragment mainFragment();
+    public abstract MainFragment mainFragment();
 
     @ActivityScoped
-    @Binds abstract MainContract.Presenter mainPresenter(MainPresenter presenter);
+    @Binds
+    public abstract MainContract.Presenter mainPresenter(MainPresenter presenter);
 
     @Provides
     @Named("Year")
@@ -40,5 +41,4 @@ public abstract class MainModule {
         SharedPreferences sp = activity.getApplicationContext().getSharedPreferences("your_prefs", Activity.MODE_PRIVATE);
         return sp.getInt("start_year", new LocalDate().getYear());
     }
-
 }

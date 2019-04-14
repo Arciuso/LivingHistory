@@ -6,7 +6,9 @@ import android.util.Log;
 import com.example.arcius.livinghistory.data.Card;
 import com.example.arcius.livinghistory.data.repository.CardRepository;
 import com.example.arcius.livinghistory.data.repository.DataInterface;
-import com.example.arcius.livinghistory.di.ActivityScoped;
+import com.example.arcius.livinghistory.dependencyInjection.ActivityScoped;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.Days;
 import org.joda.time.Interval;
@@ -39,11 +41,11 @@ public class MainPresenter implements MainContract.Presenter {
     private int warYear;    //Year of war to begin
     private int startYear;  //Year when the app was set
 
-    private LocalDate myDate = new LocalDate(year, LocalDate.now().getMonthOfYear(), LocalDate.now().getDayOfMonth());
-    private Interval interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
+    private LocalDate myDate;
+    private Interval interval;
 
     @Inject
-    MainPresenter(@Named("Year") int year, @Named("StartYear") int startYear, CardRepository repository) {
+    public MainPresenter(@Named("Year") int year, @Named("StartYear") int startYear, CardRepository repository) {
         this.year = year;
         this.warYear = year;
         this.startYear = startYear;
@@ -52,7 +54,14 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void initialize() {
-        this.myDate = myDate.withYear(this.year);
+        JodaTimeAndroid.init(view.getContext());
+
+        if(this.interval == null)
+            this.interval = new Interval(startDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
+
+        if(this.myDate == null)
+            this.myDate = new LocalDate(year, LocalDate.now().getMonthOfYear(), LocalDate.now().getDayOfMonth());
+        else this.myDate = myDate.withYear(this.year);
 
         if(isToday()) view.hideTodayFAB();
 
@@ -233,7 +242,7 @@ public class MainPresenter implements MainContract.Presenter {
     private void setDaysBefore() {
         int days = Days.daysBetween(myDate.toDateTimeAtStartOfDay(), startDate.toDateTimeAtStartOfDay()).getDays();
         view.showDays(Integer.toString(days));
-        view.showDaysText("days to initialize of war");
+        view.showDaysText("days to start of war");
     }
 
     private void setDaysDuring() {

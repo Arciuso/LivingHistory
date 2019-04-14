@@ -3,13 +3,11 @@ package com.example.arcius.livinghistory.main;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.SymbolTable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.arcius.livinghistory.R;
-import com.example.arcius.livinghistory.intro.IntroActivity;
 import com.google.android.gms.security.ProviderInstaller;
 
 import org.joda.time.LocalDate;

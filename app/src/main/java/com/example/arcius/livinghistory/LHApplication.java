@@ -1,7 +1,7 @@
 package com.example.arcius.livinghistory;
 
 import com.example.arcius.livinghistory.data.repository.CardRepository;
-import com.example.arcius.livinghistory.di.DaggerAppComponent;
+import com.example.arcius.livinghistory.dependencyInjection.DaggerAppComponent;
 
 import javax.inject.Inject;
 
